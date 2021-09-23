@@ -20,6 +20,8 @@ public class TestHistory {
     @Id
     private Long id;
 
+    private String name;
+
     private String branchName;
     private String scriptFilePath;
 
