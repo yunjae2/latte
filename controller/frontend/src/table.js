@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -16,34 +15,14 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Label, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
 /* TODO: show VU stats */
-function createData(name, date, rps, duration, min, max, p50, p99, p99_9, p99_99) {
-    return {
-        name,
-        date,
-        rps,
-        duration,
-        min,
-        max,
-        latency: [
-            {
-                percentile: "p50",
-                value: p50
-            },
-            {
-                percentile: "p99",
-                value: p99
-            },
-            {
-                percentile: "p99.9",
-                value: p99_9
-            },
-            {
-                percentile: "p99.99",
-                value: p99_99
-            },
-
-        ]
-    };
+function convertToChartData(latency) {
+    let data = Object.keys(latency).filter(key => key.startsWith("p"))
+        .map(key => ({
+            percentile: key.replace("_", "."),
+            value: latency[key],
+        }));
+    console.log(data);
+    return data;
 }
 
 function Row(props) {
@@ -68,12 +47,12 @@ function Row(props) {
                 <TableCell align="center">{row.date}</TableCell>
                 <TableCell align="center">{row.rps}</TableCell>
                 <TableCell align="center">{row.duration}</TableCell>
-                <TableCell align="right">{row.min}</TableCell>
-                <TableCell align="right">{row.max}</TableCell>
-                <TableCell align="right">{row.latency[0].value}</TableCell>
-                <TableCell align="right">{row.latency[1].value}</TableCell>
-                <TableCell align="right">{row.latency[2].value}</TableCell>
-                <TableCell align="right">{row.latency[3].value}</TableCell>
+                <TableCell align="right">{row.latency.min}</TableCell>
+                <TableCell align="right">{row.latency.max}</TableCell>
+                <TableCell align="right">{row.latency.p50}</TableCell>
+                <TableCell align="right">{row.latency.p99}</TableCell>
+                <TableCell align="right">{row.latency.p99_9}</TableCell>
+                <TableCell align="right">{row.latency.p99_99}</TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
@@ -82,7 +61,7 @@ function Row(props) {
                             <Typography variant="h6" gutterBottom component="div">
                                 Latency distribution
                             </Typography>
-                            <LineChart width={600} height={300} data={row.latency} margin={{ top: 5, right: 20, bottom: 5, left: 5 }}>
+                            <LineChart width={600} height={300} data={convertToChartData(row.latency)} margin={{ top: 5, right: 20, bottom: 5, left: 5 }}>
                                 <Tooltip />
                                 <XAxis dataKey="percentile">
                                     <Label value="Percentile" position="insideBottom" offset={0}/>
@@ -101,32 +80,9 @@ function Row(props) {
     );
 }
 
-Row.propTypes = {
-    row: PropTypes.shape({
-        calories: PropTypes.number.isRequired,
-        carbs: PropTypes.number.isRequired,
-        fat: PropTypes.number.isRequired,
-        history: PropTypes.arrayOf(
-            PropTypes.shape({
-                amount: PropTypes.number.isRequired,
-                customerId: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
-            }),
-        ).isRequired,
-        name: PropTypes.string.isRequired,
-        price: PropTypes.number.isRequired,
-        protein: PropTypes.number.isRequired,
-    }).isRequired,
-};
+export default function CollapsibleTable(props) {
+    const { rows } = props;
 
-const rows = [
-    createData('Test 1', '2021-09-10', 1000.0, 300, 90, 753, 162, 382, 486, 576),
-    createData('Test 2', '2021-09-05', 1000.0, 300, 88, 690, 170, 260, 430, 570),
-    createData('Test 3', '2021-09-03', 500.0, 300, 62, 540, 133, 310, 393, 452),
-    createData('Test 4', '2021-09-02', 500.0, 300, 64, 592, 152, 355, 438, 513),
-];
-
-export default function CollapsibleTable() {
     return (
         <TableContainer component={Paper}>
             <Table aria-label="collapsible table" size="small">
