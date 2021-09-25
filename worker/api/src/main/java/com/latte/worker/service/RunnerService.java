@@ -11,10 +11,12 @@ import reactor.core.publisher.Flux;
 public class RunnerService {
     private final TestSourceService testSourceService;
     private final TestExecutionService testExecutionService;
+    private final TestSummaryService testSummaryService;
 
     public Flux<DataBuffer> run(RunnerRequest runnerRequest) {
         /* TODO: exception if already running */
         testSourceService.fetch(runnerRequest.getRepositoryUrl(), runnerRequest.getToken(), runnerRequest.getBranchName());
-        return testExecutionService.execute(runnerRequest.getScriptFilePath());
+        return testExecutionService.execute(runnerRequest.getScriptFilePath())
+                .doOnComplete(testSummaryService::report);
     }
 }

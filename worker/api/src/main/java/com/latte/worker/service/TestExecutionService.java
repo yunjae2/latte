@@ -27,6 +27,7 @@ public class TestExecutionService {
         Process process;
         try {
             process = new ProcessBuilder()
+                    .directory(SOURCE_PATH.toFile())
                     .command(executable, argument)
                     .redirectErrorStream(true)
                     .start();
