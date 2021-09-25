@@ -23,8 +23,7 @@ public class ControllerConfig {
     @Getter
     @Setter
     public static class Worker {
-        private String address;
-        private Integer port;
+        private String url;
     }
 
     @NoArgsConstructor

@@ -1,7 +1,9 @@
 package com.latte.controller.client;
 
+import com.latte.controller.config.ControllerConfig;
 import com.latte.controller.dto.RunConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,13 +14,13 @@ import reactor.core.publisher.Flux;
 
 @Slf4j
 @Component
+@RefreshScope
 public class WorkerClient {
     private final WebClient webClient;
 
-    public WorkerClient() {
-        /* TODO: Use configuration for url */
+    public WorkerClient(ControllerConfig controllerConfig) {
         webClient = WebClient.builder()
-                .baseUrl("http://localhost:8081")
+                .baseUrl(controllerConfig.getWorker().getUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
