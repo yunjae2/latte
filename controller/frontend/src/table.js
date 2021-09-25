@@ -80,6 +80,7 @@ function Row(props) {
     );
 }
 
+/* TODO: paging */
 export default function CollapsibleTable(props) {
     const { rows } = props;
 

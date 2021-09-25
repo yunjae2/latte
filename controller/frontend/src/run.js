@@ -85,8 +85,27 @@ export default function() {
 }
 `;
 
-
 export default function Run() {
+	const name = React.useRef();
+	const branch = React.useRef();
+	const script = React.useRef();
+
+	const requestRun = () => {
+		fetch("http://localhost:8080/run", {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				testName: name.current.value,
+				branchName: branch.current.value,
+				scriptFilePath: script.current.value,
+			})
+		})
+		.catch(error => console.error(error));
+	}
+
     return (
         <React.Fragment>
             <CssBaseline />
@@ -94,16 +113,16 @@ export default function Run() {
                 <Box sx={{ height: 100 }}>
                     <Grid container spacing={4} alignItems="center">
                         <Grid item sm={3} md={3}>
-                            <TextField fullWidth id="name" label="Name" variant="outlined" />
+                            <TextField fullWidth inputRef={name} label="Name" variant="outlined" />
                         </Grid>
                         <Grid item sm={3} md={3}>
-                            <TextField fullWidth id="branch" label="Branch" variant="outlined" />
+                            <TextField fullWidth inputRef={branch} label="Branch" variant="outlined" />
                         </Grid>
                         <Grid item sm={4} md={5}>
-                            <TextField fullWidth id="script" label="Script file" variant="outlined" />
+                            <TextField fullWidth inputRef={script} id="script" label="Script file" variant="outlined" />
                         </Grid>
                         <Grid item sm={2} sm={1}>
-                            <Button variant="contained" size="medium">Run</Button>
+                            <Button onClick={requestRun} variant="contained" size="medium">Run</Button>
                         </Grid>
                     </Grid>
                 </Box>
