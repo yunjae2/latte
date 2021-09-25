@@ -1,6 +1,6 @@
 package com.latte.worker.service;
 
-import com.latte.worker.controller.request.RunnerRequest.Token;
+import com.latte.worker.dto.SourceConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
@@ -18,13 +18,13 @@ import java.nio.file.Paths;
 public class TestSourceService {
     private static final Path SOURCE_PATH = Paths.get(System.getProperty("user.home"), ".latte", "workspace");
 
-    public void fetch(String uri, Token token, String branchName) {
+    public void fetch(SourceConfig sourceConfig) {
         FileSystemUtils.deleteRecursively(SOURCE_PATH.toFile());
         try {
             Git.cloneRepository()
-                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(token.getName(), token.getValue()))
-                    .setURI(uri)
-                    .setBranch(branchName)
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(sourceConfig.getToken().getName(), sourceConfig.getToken().getValue()))
+                    .setURI(sourceConfig.getRepositoryUrl())
+                    .setBranch(sourceConfig.getBranchName())
                     .setDirectory(SOURCE_PATH.toFile())
                     .call();
         } catch (GitAPIException e) {

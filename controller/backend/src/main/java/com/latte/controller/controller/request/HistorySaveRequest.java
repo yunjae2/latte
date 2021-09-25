@@ -1,15 +1,16 @@
-package com.latte.worker.controller.request;
+package com.latte.controller.controller.request;
 
-import com.latte.worker.type.Token;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @Getter
-public class RunnerRequest {
+public class HistorySaveRequest {
     private String testName;
-    private String repositoryUrl;
-    private Token token;
+    private LocalDateTime startTime;
     private String branchName;
     private String scriptFilePath;
+    private String summary;
 }

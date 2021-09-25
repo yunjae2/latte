@@ -1,22 +1,17 @@
 package com.latte.controller.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
+@AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 public class TestHistory {
     @GeneratedValue
     @Id
@@ -30,14 +25,20 @@ public class TestHistory {
     private String branchName;
     private String scriptFilePath;
 
+    /* TODO: replace with exit status of the test */
     private Boolean isSuccessful;
 
+    /* TODO: add failed request count */
     private Long requestCount;
     private Double rps;
-    private Long duration;  // in seconds
+    private Double duration;  // in ms
+
+    /* TODO: add iteration count */
+    /* TODO: add vuser count (min, max) */
 
     @Embedded
     private Latency latency;
 
+    @Lob
     private String result;
 }

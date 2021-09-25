@@ -22,7 +22,7 @@ public class TestExecutionService {
 
     public Flux<DataBuffer> execute(String scriptFilePath) {
         String executable = SOURCE_PATH.resolve("run.sh").toAbsolutePath().toString();
-        String argument = SOURCE_PATH.resolve(scriptFilePath).toAbsolutePath().toString();
+        String argument = Paths.get(scriptFilePath).toString();
 
         Process process;
         try {
