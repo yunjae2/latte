@@ -6,12 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "controller")
+@RefreshScope
 @Component
 public class ControllerConfig {
     private Worker worker;

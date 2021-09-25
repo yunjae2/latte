@@ -11,3 +11,14 @@ spring:
 
   config:
     import: file:${user.home}/.latte/controller.yml
+
+  cloud:
+    config:
+      import-check:
+        enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh
