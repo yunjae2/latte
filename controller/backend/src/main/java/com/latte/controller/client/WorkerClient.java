@@ -1,6 +1,6 @@
 package com.latte.controller.client;
 
-import com.latte.controller.controller.request.RunnerRequest;
+import com.latte.controller.dto.RunConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
@@ -23,10 +23,10 @@ public class WorkerClient {
                 .build();
     }
 
-    public Flux<DataBuffer> run(RunnerRequest runnerRequest) {
+    public Flux<DataBuffer> run(RunConfig runConfig) {
         return webClient.method(HttpMethod.POST)
                 .uri("/run")
-                .bodyValue(runnerRequest)
+                .bodyValue(runConfig)
                 .retrieve()
                 .bodyToFlux(DataBuffer.class)
                 .doOnError(throwable -> log.error("Failed to call worker", throwable));
