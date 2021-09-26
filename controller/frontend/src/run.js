@@ -104,12 +104,8 @@ export default function Run() {
 			setOutput(output => output + e.data);
 		};
 
-		var openOnce = false;
-		eventSource.onopen = e => {
-			if (openOnce) {
-				eventSource.close();
-			}
-			openOnce = true;
+		eventSource.onerror = e => {
+			eventSource.close();
 		}
 	}
 
