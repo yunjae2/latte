@@ -18,6 +18,7 @@ import reactor.core.publisher.Flux;
 public class RunnerController {
     private final RunnerService runnerService;
 
+    /* TODO: allow only controller requests; use properties? */
     @PostMapping
     public Flux<DataBuffer> run(@RequestBody RunnerRequest runnerRequest) {
         return runnerService.run(runnerRequest);

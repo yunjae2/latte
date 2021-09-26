@@ -1,12 +1,12 @@
 package com.latte.worker.client;
 
+import com.latte.worker.config.WorkerConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -16,13 +16,13 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@RefreshScope
 public class ControllerClient {
     private final WebClient webClient;
 
-    public ControllerClient() {
-        /* TODO: Use configuration for url */
+    public ControllerClient(WorkerConfig workerConfig) {
         webClient = WebClient.builder()
-                .baseUrl("http://localhost:8080")
+                .baseUrl(workerConfig.getController().getUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
