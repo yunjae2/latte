@@ -7,7 +7,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { fontFamily } from '@mui/system';
 
 const demoScript = `import http from 'k6/http';
 import { URLSearchParams } from 'https://jslib.k6.io/url/1.0.0/index.js';
@@ -93,22 +92,25 @@ export default function Run() {
 	const [ output, setOutput ] = React.useState("");
 
 	const requestRun = () => {
-		setOutput("Running...")
+		setOutput("")
+		let url = new URL("http://localhost:8080/run");
+		url.searchParams.set("testName", name.current.value);
+		url.searchParams.set("branchName", branch.current.value);
+		url.searchParams.set("scriptFilePath", script.current.value);
 
-		fetch("http://localhost:8080/run", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				testName: name.current.value,
-				branchName: branch.current.value,
-				scriptFilePath: script.current.value,
-			})
-		})
-		.then(response => response.text())
-		.then(text => setOutput(text))
-		.catch(error => console.error(error));
+		let eventSource = new EventSource(url.toString())
+
+		eventSource.onmessage = e => {
+			setOutput(output => output + e.data);
+		};
+
+		var openOnce = false;
+		eventSource.onopen = e => {
+			if (openOnce) {
+				eventSource.close();
+			}
+			openOnce = true;
+		}
 	}
 
     return (
