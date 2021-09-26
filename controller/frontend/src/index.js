@@ -2,6 +2,7 @@ import * as React from 'react';
 import ReactDOM from 'react-dom';
 import History from './history';
 import Run from './run';
+import Settings from './settings';
 import {
   BrowserRouter as Router,
   Switch,
@@ -21,12 +22,18 @@ export default function App() {
             <li>
               <Link to="/run">Run</Link>
             </li>
+            <li>
+              <Link to="/settings">Settings</Link>
+            </li>
           </ul>
         </nav>
 
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
+          <Route path="/settings">
+            <Settings />
+          </Route>
           <Route path="/run">
             <Run />
           </Route>
@@ -37,10 +44,6 @@ export default function App() {
       </div>
     </Router>
   );
-}
-
-function Home() {
-  return <h2>Home</h2>;
 }
 
 ReactDOM.render(<App />, document.querySelector('#app'));
