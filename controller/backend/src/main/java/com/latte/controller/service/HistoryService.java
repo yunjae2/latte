@@ -3,9 +3,10 @@ package com.latte.controller.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.latte.controller.controller.request.HistorySaveRequest;
 import com.latte.controller.domain.Latency;
 import com.latte.controller.domain.TestHistory;
+import com.latte.controller.dto.RunConfig;
+import com.latte.controller.dto.RunInfo;
 import com.latte.controller.repository.HistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,25 +26,28 @@ public class HistoryService {
         return Mono.just(historyRepository.findAll());
     }
 
-    public Mono<Void> save(HistorySaveRequest historySaveRequest) {
-        TestHistory testHistory = convertToTestHistory(historySaveRequest);
-        return Mono.fromRunnable(() -> historyRepository.save(testHistory));
+    public Mono<Void> save(RunConfig runConfig, RunInfo runInfo, String summary) {
+        TestHistory testHistory = buildTestHistory(runConfig, runInfo, summary);
+        return Mono.fromRunnable(() -> {
+            historyRepository.save(testHistory);
+            log.info("Run history saved successfully");
+        });
     }
 
-    private TestHistory convertToTestHistory(HistorySaveRequest historySaveRequest) {
+    private TestHistory buildTestHistory(RunConfig runConfig, RunInfo runInfo, String summary) {
         JsonNode root;
         try {
-            root = objectMapper.readTree(historySaveRequest.getSummary());
+            root = objectMapper.readTree(summary);
         } catch (JsonProcessingException e) {
             log.error("Failed to parse summary results", e);
             throw new IllegalStateException(e);
         }
 
         return TestHistory.builder()
-                .name(historySaveRequest.getTestName())
-                .date(historySaveRequest.getStartTime())
-                .branchName(historySaveRequest.getBranchName())
-                .scriptFilePath(historySaveRequest.getScriptFilePath())
+                .name(runInfo.getTestName())
+                .date(runInfo.getStartTime())
+                .branchName(runConfig.getBranchName())
+                .scriptFilePath(runConfig.getScriptFilePath())
                 .isSuccessful(true)     // TODO
                 .requestCount(root.at("/metrics/http_reqs/values/count").asLong())
                 .rps(root.at("/metrics/http_reqs/values/rate").asDouble())
@@ -57,7 +61,7 @@ public class HistoryService {
                         .p99_9(root.at("/metrics/http_req_duration/values/p(99.9)").asDouble())
                         .p99_99(root.at("/metrics/http_req_duration/values/p(99.99)").asDouble())
                         .build())
-                .result(historySaveRequest.getSummary())
+                .result(summary)
                 .build();
     }
 }

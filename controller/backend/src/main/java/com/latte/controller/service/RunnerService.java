@@ -4,14 +4,15 @@ import com.latte.controller.client.WorkerClient;
 import com.latte.controller.config.ControllerConfig;
 import com.latte.controller.controller.request.RunnerRequest;
 import com.latte.controller.dto.RunConfig;
+import com.latte.controller.dto.RunInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,19 +20,22 @@ import java.nio.charset.StandardCharsets;
 public class RunnerService {
     private final WorkerClient workerClient;
     private final ControllerConfig controllerConfig;
+    private final HistoryService historyService;
 
     public Flux<String> run(RunnerRequest runnerRequest) {
-
+        RunInfo runInfo = buildRunInfo(runnerRequest);
         RunConfig runConfig = buildConfig(runnerRequest);
-        return workerClient.run(runConfig)
-                .filter(output -> {
-                    log.info(output);
-                    return true;
-                })
-                .doOnComplete(() -> {
-                    /* TODO: convert to history entity */
-                    /* TODO: save the entity */
-                });
+        Flux<String> outputs = workerClient.run(runConfig).publish().autoConnect(2);
+        saveSummary(runConfig, runInfo, outputs.last());
+        return outputs.skipLast(1)
+                .doOnNext(log::info);
+    }
+
+    private RunInfo buildRunInfo(RunnerRequest runnerRequest) {
+        return RunInfo.builder()
+                .startTime(LocalDateTime.now())
+                .testName(runnerRequest.getTestName())
+                .build();
     }
 
     private RunConfig buildConfig(RunnerRequest runnerRequest) {
@@ -41,5 +45,11 @@ public class RunnerService {
                 .branchName(runnerRequest.getBranchName())
                 .scriptFilePath(runnerRequest.getScriptFilePath())
                 .build();
+    }
+
+    private void saveSummary(RunConfig runConfig, RunInfo runInfo, Mono<String> summary) {
+        summary.flatMap(s -> historyService.save(runConfig, runInfo, s))
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe();
     }
 }
