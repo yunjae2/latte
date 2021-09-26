@@ -20,12 +20,17 @@ public class RunnerService {
     private final WorkerClient workerClient;
     private final ControllerConfig controllerConfig;
 
-    public Flux<DataBuffer> run(RunnerRequest runnerRequest) {
+    public Flux<String> run(RunnerRequest runnerRequest) {
+
         RunConfig runConfig = buildConfig(runnerRequest);
         return workerClient.run(runConfig)
-                .doOnNext(dataBuffer -> {
-                    ByteBuffer byteBuffer = dataBuffer.asByteBuffer();
-                    log.info(StandardCharsets.UTF_8.decode(byteBuffer).toString());
+                .filter(output -> {
+                    log.info(output);
+                    return true;
+                })
+                .doOnComplete(() -> {
+                    /* TODO: convert to history entity */
+                    /* TODO: save the entity */
                 });
     }
 

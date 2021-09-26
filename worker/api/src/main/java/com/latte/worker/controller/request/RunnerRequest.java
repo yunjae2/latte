@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class RunnerRequest {
-    private String testName;
     private String repositoryUrl;
     private Token token;
     private String branchName;

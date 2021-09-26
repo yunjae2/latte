@@ -4,7 +4,6 @@ import com.latte.controller.config.ControllerConfig;
 import com.latte.controller.dto.RunConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -25,12 +24,12 @@ public class WorkerClient {
                 .build();
     }
 
-    public Flux<DataBuffer> run(RunConfig runConfig) {
+    public Flux<String> run(RunConfig runConfig) {
         return webClient.method(HttpMethod.POST)
                 .uri("/run")
                 .bodyValue(runConfig)
                 .retrieve()
-                .bodyToFlux(DataBuffer.class)
-                .doOnError(throwable -> log.error("Failed to call worker", throwable));
+                .bodyToFlux(String.class)
+                .doOnError(throwable -> log.error("Failed to run a test on worker", throwable));
     }
 }

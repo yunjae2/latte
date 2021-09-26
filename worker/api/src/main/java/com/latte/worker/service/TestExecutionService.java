@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 public class TestExecutionService {
     private static final Path SOURCE_PATH = Paths.get(System.getProperty("user.home"), ".latte", "workspace");
 
-    public Flux<DataBuffer> execute(String scriptFilePath) {
+    public Flux<String> execute(String scriptFilePath) {
         String executable = SOURCE_PATH.resolve("run.sh").toAbsolutePath().toString();
         String argument = Paths.get(scriptFilePath).toString();
 
@@ -37,10 +37,13 @@ public class TestExecutionService {
         }
 
         log.info("Running the test..");
-        Flux<DataBuffer> output = DataBufferUtils.readInputStream(process::getInputStream, DefaultDataBufferFactory.sharedInstance, DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY);
-        return output.doOnNext(dataBuffer -> {
-                    ByteBuffer byteBuffer = dataBuffer.asByteBuffer();
-                    log.info(StandardCharsets.UTF_8.decode(byteBuffer).toString());
-                });
+        Flux<DataBuffer> outputBuffer = DataBufferUtils.readInputStream(process::getInputStream, DefaultDataBufferFactory.sharedInstance, DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY);
+        return outputBuffer.map(this::convertToString)
+                .doOnNext(log::info);
+    }
+
+    private String convertToString(DataBuffer dataBuffer) {
+        ByteBuffer byteBuffer = dataBuffer.asByteBuffer();
+        return StandardCharsets.UTF_8.decode(byteBuffer).toString();
     }
 }
