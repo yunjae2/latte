@@ -45,14 +45,14 @@ function Row(props) {
                     {row.name}
                 </TableCell>
                 <TableCell align="center">{row.date}</TableCell>
-                <TableCell align="center">{row.rps}</TableCell>
-                <TableCell align="center">{row.duration}</TableCell>
-                <TableCell align="right">{row.latency.min}</TableCell>
-                <TableCell align="right">{row.latency.max}</TableCell>
-                <TableCell align="right">{row.latency.p50}</TableCell>
-                <TableCell align="right">{row.latency.p99}</TableCell>
-                <TableCell align="right">{row.latency.p99_9}</TableCell>
-                <TableCell align="right">{row.latency.p99_99}</TableCell>
+                <TableCell align="center">{row.rps.toFixed(1)}</TableCell>
+                <TableCell align="center">{(row.duration / 1000).toFixed(0)}</TableCell>
+                <TableCell align="right">{row.latency.min.toPrecision(3)}</TableCell>
+                <TableCell align="right">{row.latency.max.toPrecision(3)}</TableCell>
+                <TableCell align="right">{row.latency.p50.toPrecision(3)}</TableCell>
+                <TableCell align="right">{row.latency.p99.toPrecision(3)}</TableCell>
+                <TableCell align="right">{row.latency.p99_9.toPrecision(3)}</TableCell>
+                <TableCell align="right">{row.latency.p99_99.toPrecision(3)}</TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
