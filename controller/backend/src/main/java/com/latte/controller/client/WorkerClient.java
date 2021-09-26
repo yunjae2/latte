@@ -25,9 +25,14 @@ public class WorkerClient {
     }
 
     public Flux<String> run(RunConfig runConfig) {
-        return webClient.method(HttpMethod.POST)
-                .uri("/run")
-                .bodyValue(runConfig)
+        return webClient.method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.path("/run")
+                        .queryParam("repositoryUrl", runConfig.getRepositoryUrl())
+                        .queryParam("token.name", runConfig.getToken().getName())
+                        .queryParam("token.value", runConfig.getToken().getValue())
+                        .queryParam("branchName", runConfig.getBranchName())
+                        .queryParam("scriptFilePath", runConfig.getScriptFilePath())
+                        .build())
                 .retrieve()
                 .bodyToFlux(String.class)
                 .doOnError(throwable -> log.error("Failed to run a test on worker", throwable));

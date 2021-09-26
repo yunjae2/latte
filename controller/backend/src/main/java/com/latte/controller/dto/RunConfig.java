@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class RunConfig {
-    private String testName;
     private String repositoryUrl;
     private Token token;
     private String branchName;

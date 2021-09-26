@@ -36,7 +36,6 @@ public class RunnerService {
 
     private RunConfig buildConfig(RunnerRequest runnerRequest) {
         return RunConfig.builder()
-                .testName(runnerRequest.getTestName())
                 .repositoryUrl(controllerConfig.getGit().getUrl())
                 .token(controllerConfig.getGit().getToken())
                 .branchName(runnerRequest.getBranchName())
