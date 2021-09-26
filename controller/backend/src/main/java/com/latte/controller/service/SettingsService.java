@@ -26,6 +26,11 @@ public class SettingsService {
     private static final Path SETTINGS_PATH = Paths.get(System.getProperty("user.home"), ".latte", "controller.yml");
 
     private final RefreshEndpoint refreshEndpoint;
+    private final ControllerConfig controllerConfig;
+
+    public Mono<ControllerConfig> get() {
+        return Mono.just(controllerConfig);
+    }
 
     public Mono<Void> update(ControllerConfig controllerConfig) {
         return Mono.fromRunnable(() -> updateSettings(controllerConfig));

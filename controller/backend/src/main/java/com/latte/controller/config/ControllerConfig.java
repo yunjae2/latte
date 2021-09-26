@@ -1,6 +1,7 @@
 package com.latte.controller.config;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.latte.controller.type.Token;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @JsonRootName("controller")
+@JsonSerialize(as = ControllerConfig.class)     // To mitigate infinite recursive due to @RefreshScope's proxy
 @ConfigurationProperties(prefix = "controller")
 @RefreshScope
 @Component
