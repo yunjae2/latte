@@ -1,5 +1,6 @@
 package com.latte.controller.config;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.latte.controller.type.Token;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonRootName("controller")
 @ConfigurationProperties(prefix = "controller")
 @RefreshScope
 @Component
