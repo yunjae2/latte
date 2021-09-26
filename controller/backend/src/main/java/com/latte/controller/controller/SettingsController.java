@@ -24,8 +24,10 @@ public class SettingsController {
     }
 
     @PutMapping("/update")
-    public Mono<Void> update(@Valid @RequestBody SettingsUpdateRequest settingsUpdateRequest) {
+    public Mono<SettingsGetResponse> update(@Valid @RequestBody SettingsUpdateRequest settingsUpdateRequest) {
         return settingsService.update(settingsUpdateRequest.getControllerConfig())
+                .flatMap(v -> settingsService.get())
+                .map(SettingsGetResponse::from)
                 .doOnSuccess(v -> log.info("Settings updated successfully"));
     }
 }
