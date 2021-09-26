@@ -14,6 +14,10 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Label, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
+const grayCell = {
+    backgroundColor: "F0F0F0"
+}
+
 /* TODO: show VU stats */
 function convertToChartData(latency) {
     let data = Object.keys(latency).filter(key => key.startsWith("p"))
@@ -23,6 +27,16 @@ function convertToChartData(latency) {
         }));
     console.log(data);
     return data;
+}
+
+function LatencyLabel(props) {
+        const { x, y, stroke, value } = props;
+
+        return (
+            <text x={x} y={y} dy={-10} fill={stroke} textAnchor="middle">
+                {value.toFixed(0)}
+            </text>
+        );
 }
 
 function Row(props) {
@@ -47,30 +61,31 @@ function Row(props) {
                 <TableCell align="center">{row.date}</TableCell>
                 <TableCell align="center">{row.rps.toFixed(1)}</TableCell>
                 <TableCell align="center">{(row.duration / 1000).toFixed(0)}</TableCell>
-                <TableCell align="right">{row.latency.min.toPrecision(3)}</TableCell>
-                <TableCell align="right">{row.latency.max.toPrecision(3)}</TableCell>
+                <TableCell align="right" style={grayCell}>{row.latency.min.toPrecision(3)}</TableCell>
+                <TableCell align="right" style={grayCell}>{row.latency.avg.toPrecision(3)}</TableCell>
+                <TableCell align="right" style={grayCell}>{row.latency.max.toPrecision(3)}</TableCell>
                 <TableCell align="right">{row.latency.p50.toPrecision(3)}</TableCell>
                 <TableCell align="right">{row.latency.p99.toPrecision(3)}</TableCell>
                 <TableCell align="right">{row.latency.p99_9.toPrecision(3)}</TableCell>
                 <TableCell align="right">{row.latency.p99_99.toPrecision(3)}</TableCell>
             </TableRow>
             <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">
                                 Latency distribution
                             </Typography>
-                            <LineChart width={600} height={300} data={convertToChartData(row.latency)} margin={{ top: 5, right: 20, bottom: 5, left: 5 }}>
+                            <LineChart width={600} height={300} data={convertToChartData(row.latency)} margin={{ top: 5, right: 20, bottom: 5, left: 15 }}>
                                 <Tooltip />
                                 <XAxis dataKey="percentile">
-                                    <Label value="Percentile" position="insideBottom" offset={0}/>
+                                    <Label value="Percentile" position="insideBottom" offset={0} />
                                 </XAxis>
-                                <YAxis>
-                                    <Label value="Latency (ms)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+                                <YAxis tick={{ dx: -10 }}>
+                                    <Label dx={-10} value="Latency (ms)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
                                 </YAxis>
                                 <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                                <Line dataKey="value" barSize={50} stroke="#8884d8" />
+                                <Line dataKey="value" stroke="#8884d8" label={<LatencyLabel />} />
                             </LineChart>
                         </Box>
                     </Collapse>
@@ -94,11 +109,12 @@ export default function CollapsibleTable(props) {
                         <TableCell rowSpan={2} align="center">Date</TableCell>
                         <TableCell rowSpan={2} align="center">RPS</TableCell>
                         <TableCell rowSpan={2} align="center">Duration&nbsp;(s)</TableCell>
-                        <TableCell colSpan={6} align="center" size="small">Latency&nbsp;(ms)</TableCell>
+                        <TableCell colSpan={7} align="center" size="small">Latency&nbsp;(ms)</TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell align="right" size="small">min</TableCell>
-                        <TableCell align="right" size="small">max</TableCell>
+                        <TableCell align="right" size="small" style={grayCell}>min</TableCell>
+                        <TableCell align="right" size="small" style={grayCell}>avg</TableCell>
+                        <TableCell align="right" size="small" style={grayCell}>max</TableCell>
                         <TableCell align="right" size="small">p50</TableCell>
                         <TableCell align="right" size="small">p99</TableCell>
                         <TableCell align="right" size="small">p99.9</TableCell>
