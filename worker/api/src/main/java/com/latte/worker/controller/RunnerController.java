@@ -15,7 +15,6 @@ import reactor.core.publisher.Flux;
 public class RunnerController {
     private final RunnerService runnerService;
 
-    /* TODO: allow only controller requests; use properties? */
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> run(RunnerRequest runnerRequest) {
         return runnerService.run(runnerRequest);
