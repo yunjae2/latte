@@ -3,15 +3,15 @@ package com.latte.controller.config;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.latte.controller.type.Token;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @JsonRootName("controller")
@@ -24,6 +24,7 @@ public class ControllerConfig {
     private Git git;
 
     @NoArgsConstructor
+    @AllArgsConstructor
     @Getter
     @Setter
     public static class Worker {
@@ -31,11 +32,19 @@ public class ControllerConfig {
     }
 
     @NoArgsConstructor
+    @AllArgsConstructor
     @Getter
     @Setter
     public static class Git {
         private String url;
         @NestedConfigurationProperty
         private Token token;
+    }
+
+    public ControllerConfig toPublicConfig() {
+        return ControllerConfig.builder()
+                .worker(new Worker(this.getWorker().getUrl()))
+                .git(new Git(this.getGit().getUrl(), new Token("", "")))
+                .build();
     }
 }

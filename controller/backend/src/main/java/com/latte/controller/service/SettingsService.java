@@ -29,7 +29,7 @@ public class SettingsService {
     private final ControllerConfig controllerConfig;
 
     public Mono<ControllerConfig> get() {
-        return Mono.just(controllerConfig);
+        return Mono.just(controllerConfig.toPublicConfig());
     }
 
     public Mono<Void> update(ControllerConfig controllerConfig) {
