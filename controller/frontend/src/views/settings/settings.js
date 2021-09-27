@@ -1,6 +1,7 @@
-import { Button, TextField } from '@mui/material';
+import { Button, Container, TextField } from '@mui/material';
 import React, { useEffect, useReducer } from 'react';
 import { set } from 'lodash';
+import { Box } from '@mui/system';
 
 const emptySettings = {
     controller: {
@@ -18,7 +19,7 @@ const emptySettings = {
 }
 
 function reduceSettings(settings, action) {
-    return set({...settings}, action.key, action.value);
+    return set({ ...settings }, action.key, action.value);
 }
 
 function SettingsField(props) {
@@ -69,11 +70,14 @@ export default function Settings() {
 
     return (
         <React.Fragment>
-            <SettingsField label="Worker URL" value={settings.controller.worker.url} onChange={updateWorkerUrl} />
-            <SettingsField label="Script repo URL" value={settings.controller.git.url} onChange={updateGitUrl} />
-            <SettingsField label="Script repo token name" value={settings.controller.git.token.name} onChange={updateGitTokenName} />
-            <SettingsField label="Script repo token value" value={settings.controller.git.token.value} onChange={updateGitTokenValue} />
-            <Button onClick={requestUpdate} variant="contained" size="medium">Update</Button>
+            <Container>
+				<Box sx={{ height: 10 }} />
+                <SettingsField label="Worker URL" value={settings.controller.worker.url} onChange={updateWorkerUrl} />
+                <SettingsField label="Script repo URL" value={settings.controller.git.url} onChange={updateGitUrl} />
+                <SettingsField label="Script repo token name" value={settings.controller.git.token.name} onChange={updateGitTokenName} />
+                <SettingsField label="Script repo token value" value={settings.controller.git.token.value} onChange={updateGitTokenValue} />
+                <Button onClick={requestUpdate} variant="contained" size="medium">Update</Button>
+            </Container>
         </React.Fragment>
     );
 }
