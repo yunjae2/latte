@@ -34,7 +34,6 @@ export default function Run() {
 
     return (
         <React.Fragment>
-			<CssBaseline />
             <Container maxWidth="false">
 				<Box sx={{ height: 30 }} />
                 <Box sx={{ height: 100 }}>
