@@ -9,24 +9,25 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import { Tabs } from '@mui/material';
+import { Tab } from '@mui/material';
 
+/* TODO: fix bug that wrong tab is highlighted after refresh */
 export default function App() {
+  const [value, setValue] = React.useState("1");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  }
+
   return (
     <Router>
       <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">History</Link>
-            </li>
-            <li>
-              <Link to="/run">Run</Link>
-            </li>
-            <li>
-              <Link to="/settings">Settings</Link>
-            </li>
-          </ul>
-        </nav>
+        <Tabs value={value} onChange={handleChange}>
+          <Tab label='History' component={Link} to={"/"} value="1" />
+          <Tab label='Run' component={Link} to={"/run"} value="2" />
+          <Tab label='Settings' component={Link} to={"/settings"} value="3" />
+        </Tabs>
 
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
@@ -42,7 +43,7 @@ export default function App() {
           </Route>
         </Switch>
       </div>
-    </Router>
+    </Router >
   );
 }
 
