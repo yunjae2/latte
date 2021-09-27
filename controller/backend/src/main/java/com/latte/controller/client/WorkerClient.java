@@ -1,6 +1,7 @@
 package com.latte.controller.client;
 
 import com.latte.controller.config.ControllerConfig;
+import com.latte.controller.config.IndentableServerSentEventHttpMessageReader;
 import com.latte.controller.dto.RunConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -20,6 +21,10 @@ public class WorkerClient {
     public WorkerClient(ControllerConfig controllerConfig) {
         webClient = WebClient.builder()
                 .baseUrl(controllerConfig.getWorker().getUrl())
+                .codecs(clientCodecConfigurer -> {
+                    clientCodecConfigurer.registerDefaults(false);
+                    clientCodecConfigurer.customCodecs().register(new IndentableServerSentEventHttpMessageReader());
+                })
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
