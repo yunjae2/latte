@@ -29,13 +29,13 @@ function convertToChartData(latency) {
 }
 
 function LatencyLabel(props) {
-        const { x, y, stroke, value } = props;
+    const { x, y, stroke, value } = props;
 
-        return (
-            <text x={x} y={y} dy={-10} fill={stroke} textAnchor="middle">
-                {value.toFixed(0)}
-            </text>
-        );
+    return (
+        <text x={x} y={y} dy={-10} fill={stroke} textAnchor="middle">
+            {value.toFixed(0)}
+        </text>
+    );
 }
 
 function Row(props) {
@@ -99,33 +99,35 @@ export default function CollapsibleTable(props) {
     const { rows } = props;
 
     return (
-        <TableContainer component={Paper}>
-            <Table aria-label="collapsible table" size="small">
-                <TableHead>
-                    <TableRow>
-                        <TableCell rowSpan={2} />
-                        <TableCell rowSpan={2} align="center">Name</TableCell>
-                        <TableCell rowSpan={2} align="center">Date</TableCell>
-                        <TableCell rowSpan={2} align="center">RPS</TableCell>
-                        <TableCell rowSpan={2} align="center">Duration&nbsp;(s)</TableCell>
-                        <TableCell colSpan={7} align="center" size="small">Latency&nbsp;(ms)</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell align="right" size="small" style={grayCell}>min</TableCell>
-                        <TableCell align="right" size="small" style={grayCell}>avg</TableCell>
-                        <TableCell align="right" size="small" style={grayCell}>max</TableCell>
-                        <TableCell align="right" size="small">p50</TableCell>
-                        <TableCell align="right" size="small">p99</TableCell>
-                        <TableCell align="right" size="small">p99.9</TableCell>
-                        <TableCell align="right" size="small">p99.99</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
-                        <Row key={row.name} row={row} />
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <React.Fragment>
+            <TableContainer component={Paper}>
+                <Table aria-label="collapsible table" size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell rowSpan={2} />
+                            <TableCell rowSpan={2} align="center">Name</TableCell>
+                            <TableCell rowSpan={2} align="center">Date</TableCell>
+                            <TableCell rowSpan={2} align="center">RPS</TableCell>
+                            <TableCell rowSpan={2} align="center">Duration&nbsp;(s)</TableCell>
+                            <TableCell colSpan={7} align="center" size="small">Latency&nbsp;(ms)</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell align="right" size="small" style={grayCell}>min</TableCell>
+                            <TableCell align="right" size="small" style={grayCell}>avg</TableCell>
+                            <TableCell align="right" size="small" style={grayCell}>max</TableCell>
+                            <TableCell align="right" size="small">p50</TableCell>
+                            <TableCell align="right" size="small">p99</TableCell>
+                            <TableCell align="right" size="small">p99.9</TableCell>
+                            <TableCell align="right" size="small">p99.99</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map((row) => (
+                            <Row key={row.name} row={row} />
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </React.Fragment>
     );
 }
