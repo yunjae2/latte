@@ -25,7 +25,6 @@ function convertToChartData(latency) {
             percentile: key.replace("_", "."),
             value: latency[key],
         }));
-    console.log(data);
     return data;
 }
 

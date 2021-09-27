@@ -10,7 +10,6 @@ export default function History() {
         fetch("http://localhost:8080/history/all")
             .then(res => res.json())
             .then(res => {
-                console.log(res.records);
                 setRecords(res.records);
             })
     }, []);
