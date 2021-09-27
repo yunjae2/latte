@@ -26,6 +26,7 @@ public class TestExecutionService {
 
         Process process;
         try {
+            /* TODO: wrap using fromCallable */
             process = new ProcessBuilder()
                     .directory(SOURCE_PATH.toFile())
                     .command(executable, argument)
