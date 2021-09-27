@@ -1,8 +1,8 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import History from './history';
-import Run from './run';
-import Settings from './settings';
+import History from './views/history/history';
+import Run from './views/run/run';
+import Settings from './views/settings/settings';
 import MenuBar from './menubar';
 import {
   BrowserRouter as Router,
