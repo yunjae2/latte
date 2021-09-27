@@ -3,7 +3,6 @@ import { Box } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 import Table from './table';
 
-/* TODO: Build complete page */
 export default function History() {
     const [records, setRecords] = useState([]);
 
