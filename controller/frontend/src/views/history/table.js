@@ -60,13 +60,13 @@ function Row(props) {
                 <TableCell align="center">{row.date}</TableCell>
                 <TableCell align="center">{row.rps.toFixed(1)}</TableCell>
                 <TableCell align="center">{(row.duration / 1000).toFixed(0)}</TableCell>
-                <TableCell align="right" style={grayCell}>{row.latency.min.toPrecision(3)}</TableCell>
-                <TableCell align="right" style={grayCell}>{row.latency.avg.toPrecision(3)}</TableCell>
-                <TableCell align="right" style={grayCell}>{row.latency.max.toPrecision(3)}</TableCell>
-                <TableCell align="right">{row.latency.p50.toPrecision(3)}</TableCell>
-                <TableCell align="right">{row.latency.p99.toPrecision(3)}</TableCell>
-                <TableCell align="right">{row.latency.p99_9.toPrecision(3)}</TableCell>
-                <TableCell align="right">{row.latency.p99_99.toPrecision(3)}</TableCell>
+                <TableCell align="right" style={grayCell}>{row.latency.min.toFixed(0)}</TableCell>
+                <TableCell align="right" style={grayCell}>{row.latency.avg.toFixed(0)}</TableCell>
+                <TableCell align="right" style={grayCell}>{row.latency.max.toFixed(0)}</TableCell>
+                <TableCell align="right">{row.latency.p50.toFixed(0)}</TableCell>
+                <TableCell align="right">{row.latency.p99.toFixed(0)}</TableCell>
+                <TableCell align="right">{row.latency.p99_9.toFixed(0)}</TableCell>
+                <TableCell align="right">{row.latency.p99_99.toFixed(0)}</TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
