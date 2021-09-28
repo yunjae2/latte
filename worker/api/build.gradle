@@ -22,8 +22,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r'
     implementation 'org.springframework.boot:spring-boot-starter-validation:2.5.4'
-    implementation 'org.springframework.cloud:spring-cloud-starter-config:3.0.4'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator:2.5.4'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.5'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
