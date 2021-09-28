@@ -1,6 +1,2 @@
-spring:
-  config:
-    import: file:${user.home}/.latte/worker.yml
-
 server:
   port: 8081
