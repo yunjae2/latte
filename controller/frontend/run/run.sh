@@ -2,4 +2,4 @@
 
 cd ../ &&
 
-http-server build --port 80 --proxy http://localhost:8080/
+ws --spa index.html --directory build --port 80 --rewrite '/api/(.*) -> http://localhost:8080/$1'

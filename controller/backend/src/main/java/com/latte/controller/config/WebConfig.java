@@ -13,6 +13,6 @@ public class WebConfig implements WebFluxConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedMethods("*")
-                .allowedOriginPatterns("http://localhost:*");
+                .allowedOriginPatterns("http://localhost*");
     }
 }

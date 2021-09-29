@@ -48,7 +48,7 @@ export default function Settings() {
     };
 
     const requestUpdate = () => {
-        fetch("/settings/update", {
+        fetch("/api/settings/update", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -62,7 +62,7 @@ export default function Settings() {
     };
 
     useEffect(() => {
-        fetch("/settings")
+        fetch("/api/settings")
             .then(res => res.json())
             .then(res => res.controller)
             .then(controller => dispatchSettings({ key: "controller", value: controller }))

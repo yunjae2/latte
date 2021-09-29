@@ -8,7 +8,7 @@ export default function History() {
 
     /* TODO: Make the url customizable */
     useEffect(() => {
-        fetch("/history/all")
+        fetch("/api/history/all")
             .then(res => res.json())
             .then(res => {
                 setRecords(res.records);
