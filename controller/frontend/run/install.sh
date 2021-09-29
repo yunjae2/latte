@@ -10,6 +10,4 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     sudo setcap cap_net_bind_service=+ep $(which node)
 fi
 
-npm install &&
-npm run build &&
-npm install -g local-web-server
+npm install
