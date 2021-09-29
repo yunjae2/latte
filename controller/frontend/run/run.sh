@@ -2,4 +2,4 @@
 
 cd ../ &&
 
-serve -s build -l 80
+serve -s build -l 80 -n
