@@ -17,7 +17,7 @@ export default function Run() {
     const requestRun = () => {
         setOutput("");
         setLoading(true);
-        let url = new URL("http://localhost:8080/run");
+        let url = new URL("/run");
         url.searchParams.set("testName", name.current.value);
         url.searchParams.set("branchName", branch.current.value);
         url.searchParams.set("scriptFilePath", script.current.value);

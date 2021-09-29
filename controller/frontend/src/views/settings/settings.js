@@ -48,7 +48,7 @@ export default function Settings() {
     };
 
     const requestUpdate = () => {
-        fetch("http://localhost:8080/settings/update", {
+        fetch("/settings/update", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -62,7 +62,7 @@ export default function Settings() {
     };
 
     useEffect(() => {
-        fetch("http://localhost:8080/settings")
+        fetch("/settings")
             .then(res => res.json())
             .then(res => res.controller)
             .then(controller => dispatchSettings({ key: "controller", value: controller }))
