@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cd ../ &&
-java -jar build/libs/latte-worker-*-SNAPSHOT.jar &
+java -jar build/libs/latte-worker-*-SNAPSHOT.jar
