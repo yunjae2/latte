@@ -17,7 +17,7 @@ public class TestSummaryService {
     private static final Path SOURCE_PATH = Paths.get(System.getProperty("user.home"), ".latte", "workspace");
 
     public Mono<String> report() {
-        return Mono.fromCallable(() -> Files.readString(SOURCE_PATH.resolve("results").resolve("summary.json")))
+        return Mono.fromCallable(() -> Files.readString(SOURCE_PATH.resolve("summary.json")))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 }
