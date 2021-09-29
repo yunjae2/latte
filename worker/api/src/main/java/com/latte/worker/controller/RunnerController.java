@@ -17,6 +17,6 @@ public class RunnerController {
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> run(RunnerRequest runnerRequest) {
-        return runnerService.run(runnerRequest);
+        return runnerService.tryRun(runnerRequest);
     }
 }
