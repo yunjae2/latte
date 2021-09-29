@@ -21,7 +21,6 @@ public class TestExecutionService {
     private static final Path SOURCE_PATH = Paths.get(System.getProperty("user.home"), ".latte", "workspace");
 
     public Flux<String> execute(String scriptFilePath) {
-        String executable = SOURCE_PATH.resolve("run.sh").toAbsolutePath().toString();
         String argument = Paths.get(scriptFilePath).toString();
 
         Process process;
@@ -29,7 +28,7 @@ public class TestExecutionService {
             /* TODO: wrap using fromCallable */
             process = new ProcessBuilder()
                     .directory(SOURCE_PATH.toFile())
-                    .command(executable, argument)
+                    .command("k6", "run", argument)       // $ k6 run ${SCRIPT}
                     .redirectErrorStream(true)
                     .start();
         } catch (IOException e) {
