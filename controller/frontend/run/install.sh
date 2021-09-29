@@ -12,4 +12,4 @@ fi
 
 npm install &&
 npm run build &&
-npm install -g serve
+npm install -g http-server

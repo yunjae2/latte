@@ -2,4 +2,4 @@
 
 cd ../ &&
 
-serve -s build -l 80 -n
+http-server build --port 80 --proxy http://localhost:8080/
