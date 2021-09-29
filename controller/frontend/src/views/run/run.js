@@ -17,12 +17,12 @@ export default function Run() {
     const requestRun = () => {
         setOutput("");
         setLoading(true);
-        let url = new URL("/api/run");
-        url.searchParams.set("testName", name.current.value);
-        url.searchParams.set("branchName", branch.current.value);
-        url.searchParams.set("scriptFilePath", script.current.value);
+        let url = "/api/run"
+        url += "?testName=" + name.current.value;
+        url += "&branchName=" + branch.current.value;
+        url += "&scriptFilePath=" + script.current.value;
 
-        let eventSource = new EventSource(url.toString())
+        let eventSource = new EventSource(url)
 
         eventSource.onmessage = e => {
             setOutput(output => output + e.data);
