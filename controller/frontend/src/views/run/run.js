@@ -24,11 +24,16 @@ export default function Run() {
 
         let eventSource = new EventSource(url)
 
+        let running = false;
         eventSource.onmessage = e => {
             setOutput(output => output + e.data);
+            running = true;
         };
 
         eventSource.onerror = e => {
+            if (!running) {
+                alert("Another test is running currently");
+            }
             eventSource.close();
             setLoading(false);
         }
