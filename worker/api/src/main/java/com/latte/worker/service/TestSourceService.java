@@ -19,6 +19,7 @@ public class TestSourceService {
     private static final Path SOURCE_PATH = Paths.get(System.getProperty("user.home"), ".latte", "workspace");
 
     public void fetch(SourceConfig sourceConfig) {
+        log.info("Fetching the script repository...");
         FileSystemUtils.deleteRecursively(SOURCE_PATH.toFile());
         try {
             Git.cloneRepository()
