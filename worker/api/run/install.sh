@@ -1,5 +1,10 @@
 #!/bin/bash
 
+LATTE_DIR="${HOME}/.latte"
+
+mkdir -p "$LATTE_DIR" &&
+cp update_parameters.sh "$LATTE_DIR" &&
+
 cd ../ &&
 ./gradlew build &&
 
