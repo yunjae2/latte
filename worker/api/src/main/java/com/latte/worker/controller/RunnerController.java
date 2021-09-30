@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -16,7 +18,7 @@ public class RunnerController {
     private final RunnerService runnerService;
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> run(RunnerRequest runnerRequest) {
+    public Flux<String> run(@Valid RunnerRequest runnerRequest) {
         return runnerService.tryRun(runnerRequest);
     }
 }
