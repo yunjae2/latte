@@ -13,6 +13,7 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Label, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { TablePagination } from '@mui/material';
 
 const grayCell = {
     backgroundColor: "F0F0F0"
@@ -97,6 +98,17 @@ function Row(props) {
 /* TODO: paging */
 export default function CollapsibleTable(props) {
     const { rows } = props;
+    const [ page, setPage ] = React.useState(0);
+    const [ rowsPerPage, setRowsPerPage ] = React.useState(10);
+
+    const handlePageChange = (event, newPage) => {
+        setPage(newPage);
+    }
+
+    const handleRowsPerPageChange = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    }
 
     return (
         <React.Fragment>
@@ -122,10 +134,18 @@ export default function CollapsibleTable(props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
-                            <Row key={row.name} row={row} />
-                        ))}
+                        {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row) => (
+                                <Row key={row.id} row={row} />
+                            ))}
                     </TableBody>
+                    <TablePagination
+                        rowsPerPage={rowsPerPage}
+                        rowsPerPageOptions={[10, 20, 50, { label: 'All', value: -1 }]}
+                        onRowsPerPageChange={handleRowsPerPageChange}
+                        count={rows.length}
+                        page={page} onPageChange={handlePageChange}
+                    />
                 </Table>
             </TableContainer>
         </React.Fragment>
