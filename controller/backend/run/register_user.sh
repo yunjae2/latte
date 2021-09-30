@@ -3,4 +3,4 @@
 USERNAME=$1
 PASSWORD=$2
 
-sudo htpasswd -cm /etc/svn/svn-auth "$USERNAME" "$PASSWORD"
+sudo htpasswd -cmb /etc/git/git-auth "$USERNAME" "$PASSWORD"
