@@ -1,5 +1,6 @@
 package com.latte.worker.service;
 
+import com.latte.worker.dto.TestParameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -45,5 +46,25 @@ public class TestExecutionService {
     private String convertToString(DataBuffer dataBuffer) {
         ByteBuffer byteBuffer = dataBuffer.asByteBuffer();
         return StandardCharsets.UTF_8.decode(byteBuffer).toString();
+    }
+
+    public void applyParameters(TestParameters testParameters) {
+        /* TODO: wrap using fromCallable */
+        Long rate = testParameters.getRps();
+        String duration = testParameters.getDuration();
+        Long vus = testParameters.getRps() * testParameters.getEstimatedLatency() / 1000;
+        Long maxVus = testParameters.getRps() * testParameters.getEstimatedPeakLatency() / 1000;
+
+        try {
+            new ProcessBuilder()
+                    .directory(SOURCE_PATH.toFile())
+                    .command("../update_parameters.sh", rate.toString(), duration, vus.toString(), maxVus.toString())       // $ k6 run ${SCRIPT}
+                    .redirectErrorStream(true)
+                    .start()
+                    .waitFor();
+        } catch (IOException | InterruptedException e) {
+            log.error("Failed to run the test", e);
+            throw new IllegalStateException(e);
+        }
     }
 }

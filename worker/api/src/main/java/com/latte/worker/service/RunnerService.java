@@ -2,6 +2,7 @@ package com.latte.worker.service;
 
 import com.latte.worker.controller.request.RunnerRequest;
 import com.latte.worker.dto.SourceConfig;
+import com.latte.worker.dto.TestParameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,14 +30,21 @@ public class RunnerService {
     }
 
     public Flux<String> run(RunnerRequest runnerRequest) {
-        /* TODO: exception if already running */
         SourceConfig sourceConfig = SourceConfig.builder()
                 .repositoryUrl(runnerRequest.getRepositoryUrl())
                 .branchName(runnerRequest.getBranchName())
                 .token(runnerRequest.getToken())
                 .build();
 
+        TestParameters testParameters = TestParameters.builder()
+                .duration(runnerRequest.getDuration())
+                .rps(runnerRequest.getRps())
+                .estimatedLatency(runnerRequest.getEstimatedLatency())
+                .estimatedPeakLatency(runnerRequest.getEstimatedPeakLatency())
+                .build();
+
         testSourceService.fetch(sourceConfig);
+        testExecutionService.applyParameters(testParameters);
         return Flux.concat(testExecutionService.execute(runnerRequest.getScriptFilePath()),
                         testSummaryService.report());
     }
