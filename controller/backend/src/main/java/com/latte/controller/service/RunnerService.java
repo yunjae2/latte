@@ -44,6 +44,10 @@ public class RunnerService {
                 .token(controllerConfig.getGit().getToken())
                 .branchName(runnerRequest.getBranchName())
                 .scriptFilePath(runnerRequest.getScriptFilePath())
+                .duration(runnerRequest.getDuration())
+                .rps(runnerRequest.getRps())
+                .estimatedLatency(runnerRequest.getEstimatedLatency())
+                .estimatedPeakLatency(runnerRequest.getEstimatedPeakLatency())
                 .build();
     }
 
