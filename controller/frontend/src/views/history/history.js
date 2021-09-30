@@ -6,7 +6,6 @@ import Table from './table';
 export default function History() {
     const [records, setRecords] = useState([]);
 
-    /* TODO: Make the url customizable */
     useEffect(() => {
         fetch("/api/history/all")
             .then(res => res.json())
