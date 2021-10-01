@@ -23,7 +23,7 @@ public class TestSourceService {
         FileSystemUtils.deleteRecursively(SOURCE_PATH.toFile());
         try {
             Git.cloneRepository()
-                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(sourceConfig.getToken().getName(), sourceConfig.getToken().getValue()))
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(sourceConfig.getUsername(), sourceConfig.getPassword()))
                     .setURI(sourceConfig.getRepositoryUrl())
                     .setBranch(sourceConfig.getBranchName())
                     .setDirectory(SOURCE_PATH.toFile())

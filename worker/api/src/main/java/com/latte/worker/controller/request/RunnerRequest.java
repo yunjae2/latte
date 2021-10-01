@@ -1,6 +1,5 @@
 package com.latte.worker.controller.request;
 
-import com.latte.worker.type.Token;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,9 +14,9 @@ public class RunnerRequest {
     @NotBlank
     private String repositoryUrl;
     @NotNull
-    private Token token;
-    @NotBlank
-    private String branchName;
+    private String username;
+    @NotNull
+    private String password;
     @NotBlank
     private String scriptFilePath;
     @NotBlank

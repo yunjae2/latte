@@ -20,6 +20,7 @@ public class RunnerService {
     private final Semaphore runnerLock = new Semaphore(1);
 
     public Flux<String> tryRun(RunnerRequest runnerRequest) {
+        /* TODO: Bug that not releasing lock when error occurs before subscription */
         if (runnerLock.tryAcquire()) {
             return run(runnerRequest)
                     .doOnTerminate(runnerLock::release);
@@ -32,8 +33,8 @@ public class RunnerService {
     public Flux<String> run(RunnerRequest runnerRequest) {
         SourceConfig sourceConfig = SourceConfig.builder()
                 .repositoryUrl(runnerRequest.getRepositoryUrl())
-                .branchName(runnerRequest.getBranchName())
-                .token(runnerRequest.getToken())
+                .username(runnerRequest.getUsername())
+                .password(runnerRequest.getPassword())
                 .build();
 
         TestParameters testParameters = TestParameters.builder()
