@@ -40,7 +40,7 @@ public class RunnerService {
 
     private RunConfig buildConfig(RunnerRequest runnerRequest) {
         return RunConfig.builder()
-                .repositoryUrl(controllerConfig.getGit().getUrl())
+                .repositoryUrl(controllerConfig.getGit().getRepositoryUrl())
                 .username(controllerConfig.getGit().getUsername())
                 .password(controllerConfig.getGit().getPassword())
                 .branchName(runnerRequest.getBranchName())

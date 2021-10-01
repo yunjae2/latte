@@ -3,6 +3,8 @@ package com.latte.controller.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.latte.controller.config.ControllerConfig;
+import com.latte.controller.config.ControllerConfig.Git;
+import com.latte.controller.config.ControllerConfig.Worker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.endpoint.RefreshEndpoint;
@@ -32,8 +34,26 @@ public class SettingsService {
         return Mono.just(controllerConfig.toPublicConfig());
     }
 
-    public Mono<Void> update(ControllerConfig controllerConfig) {
-        return Mono.fromRunnable(() -> updateSettings(controllerConfig));
+    public Mono<Void> update(ControllerConfig newConfig) {
+        return Mono.fromRunnable(() -> updateSettings(newConfig));
+    }
+
+    public Mono<Void> updateWorker(Worker worker) {
+        ControllerConfig newConfig = ControllerConfig.builder()
+                .worker(worker)
+                .git(controllerConfig.getGit())
+                .build();
+
+        return Mono.fromRunnable(() -> updateSettings(newConfig));
+    }
+
+    public Mono<Void> updateGit(Git git) {
+        ControllerConfig newConfig = ControllerConfig.builder()
+                .worker(controllerConfig.getWorker())
+                .git(git)
+                .build();
+
+        return Mono.fromRunnable(() -> updateSettings(newConfig));
     }
 
     private void updateSettings(ControllerConfig controllerConfig) {
