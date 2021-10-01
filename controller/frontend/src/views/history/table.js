@@ -71,7 +71,7 @@ function EnhancedTableHead(props) {
                 <TableCell rowSpan={2} />
                 <EnhancedTableCell id="name" align="left" label="Name" rowSpan={2} colSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="date" align="center" label="Date" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
-                <EnhancedTableCell id="rps" align="right" label="RPS" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
+                <EnhancedTableCell id="rps" align="right" label="TPS" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="duration" align="right" label="Duration" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <TableCell colSpan={7} align="center" size="small">Latency&nbsp;(ms)</TableCell>
             </TableRow>
@@ -125,6 +125,10 @@ function Row(props) {
         setOpen((prevOpen) => !prevOpen);
     }
 
+    const displayDuration = (duration) => {
+        return Math.floor(duration / 60) + ":" + String(duration % 60).padStart(2, '0');
+    }
+
     return (
         <React.Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} onClick={handleRowClick}>
@@ -134,7 +138,7 @@ function Row(props) {
                 </TableCell>
                 <TableCell align="center">{row.date}</TableCell>
                 <TableCell align="right">{row.rps.toFixed(1)}</TableCell>
-                <TableCell align="right">{(row.duration / 1000).toFixed(0)}</TableCell>
+                <TableCell align="right">{displayDuration((row.duration / 1000).toFixed(0))}</TableCell>
                 <TableCell align="right" style={grayCell}>{row.latency.min.toFixed(0)}</TableCell>
                 <TableCell align="right" style={grayCell}>{row.latency.avg.toFixed(0)}</TableCell>
                 <TableCell align="right" style={grayCell}>{row.latency.max.toFixed(0)}</TableCell>
@@ -144,7 +148,7 @@ function Row(props) {
                 <TableCell align="right">{row.latency.p99_99.toFixed(0)}</TableCell>
             </TableRow>
             <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">
