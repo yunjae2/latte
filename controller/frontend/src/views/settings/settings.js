@@ -1,6 +1,6 @@
-import { Button, Container, TextField } from '@mui/material';
+import { Button, Container, TextField, Grid } from '@mui/material';
 import React, { useEffect, useReducer } from 'react';
-import { set } from 'lodash';
+import { set, get } from 'lodash';
 import { Box } from '@mui/system';
 
 const emptySettings = {
@@ -9,11 +9,8 @@ const emptySettings = {
             url: "1234",
         },
         git: {
-            url: "",
-            token: {
-                name: "",
-                value: "",
-            },
+            username: "",
+            password: "",
         },
     }
 }
@@ -39,21 +36,35 @@ export default function Settings() {
         dispatchSettings({ key: "controller.git.url", value: event.target.value });
     };
 
-    const updateGitTokenName = event => {
-        dispatchSettings({ key: "controller.git.token.name", value: event.target.value });
+    const updateGitUsername = event => {
+        dispatchSettings({ key: "controller.git.username", value: event.target.value });
     };
 
-    const updateGitTokenValue = event => {
-        dispatchSettings({ key: "controller.git.token.value", value: event.target.value });
+    const updateGitPassword = event => {
+        dispatchSettings({ key: "controller.git.password", value: event.target.value });
     };
 
-    const requestUpdate = () => {
-        fetch("/api/settings/update", {
+    const requestWorkerUpdate = () => {
+        fetch("/api/settings/update/worker", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(settings)
+            body: JSON.stringify({ worker: get(settings, "controller.worker") }),
+        })
+            .then(res => res.json())
+            .then(res => res.controller)
+            .then(controller => dispatchSettings({ key: "controller", value: controller }))
+            .catch(error => console.error(error));
+    };
+
+    const requestGitUpdate = () => {
+        fetch("/api/settings/update/git", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ git: get(settings, "controller.git") }),
         })
             .then(res => res.json())
             .then(res => res.controller)
@@ -71,12 +82,24 @@ export default function Settings() {
     return (
         <React.Fragment>
             <Container>
-				<Box sx={{ height: 10 }} />
-                <SettingsField label="Worker URL" value={settings.controller.worker.url} onChange={updateWorkerUrl} />
-                <SettingsField label="Script repo URL" value={settings.controller.git.url} onChange={updateGitUrl} />
-                <SettingsField label="Script repo token name" value={settings.controller.git.token.name} onChange={updateGitTokenName} />
-                <SettingsField label="Script repo token value" value={settings.controller.git.token.value} onChange={updateGitTokenValue} />
-                <Button onClick={requestUpdate} variant="contained" size="medium">Update</Button>
+                <Box sx={{ height: 10 }} />
+                <Grid container spacing={4} alignItems="center">
+                    <Grid item sm={10}>
+                        <SettingsField label="Worker URL" value={settings.controller.worker.url} onChange={updateWorkerUrl} />
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Button onClick={requestWorkerUpdate} variant="contained" size="medium">Update</Button>
+                    </Grid>
+                    <Grid item sm={5}>
+                        <SettingsField label="username" value={settings.controller.git.username} onChange={updateGitUsername} />
+                    </Grid>
+                    <Grid item sm={5}>
+                        <SettingsField label="password" value={settings.controller.git.password} onChange={updateGitPassword} />
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Button onClick={requestGitUpdate} variant="contained" size="medium">Update</Button>
+                    </Grid>
+                </Grid>
             </Container>
         </React.Fragment>
     );
