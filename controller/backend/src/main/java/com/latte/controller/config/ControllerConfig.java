@@ -2,10 +2,8 @@ package com.latte.controller.config;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.latte.controller.type.Token;
 import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
@@ -37,14 +35,14 @@ public class ControllerConfig {
     @Setter
     public static class Git {
         private String url;
-        @NestedConfigurationProperty
-        private Token token;
+        private String username;
+        private String password;
     }
 
     public ControllerConfig toPublicConfig() {
         return ControllerConfig.builder()
                 .worker(new Worker(this.getWorker().getUrl()))
-                .git(new Git(this.getGit().getUrl(), new Token("", "")))
+                .git(new Git(this.getGit().getUrl(), "", ""))
                 .build();
     }
 }

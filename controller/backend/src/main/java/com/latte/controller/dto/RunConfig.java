@@ -1,6 +1,5 @@
 package com.latte.controller.dto;
 
-import com.latte.controller.type.Token;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Getter
 public class RunConfig {
     private String repositoryUrl;
-    private Token token;
+    private String username;
+    private String password;
     private String branchName;
     private String scriptFilePath;
     private String duration;  // ex. "10s", "3m"
