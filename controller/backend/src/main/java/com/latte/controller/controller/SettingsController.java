@@ -1,9 +1,11 @@
 package com.latte.controller.controller;
 
 import com.latte.controller.controller.request.AuthUpdateRequest;
+import com.latte.controller.controller.request.SettingsRegisterRequest;
 import com.latte.controller.controller.request.SettingsUpdateRequest;
 import com.latte.controller.controller.request.WorkerUpdateRequest;
 import com.latte.controller.controller.response.SettingsGetResponse;
+import com.latte.controller.controller.response.SettingsRegisterResponse;
 import com.latte.controller.service.SettingsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,5 +49,16 @@ public class SettingsController {
                 .then(settingsService.get())
                 .map(SettingsGetResponse::from)
                 .doOnSuccess(v -> log.info("Auth settings updated successfully"));
+    }
+
+    @PostMapping("/register")
+    public Mono<SettingsRegisterResponse> register(@Valid @RequestBody SettingsRegisterRequest settingsRegisterRequest) {
+        return settingsService.register(settingsRegisterRequest.getSettings())
+                .map(SettingsRegisterResponse::from);
+    }
+
+    @GetMapping("/registered")
+    public Mono<Boolean> checkRegistered() {
+        return settingsService.checkRegistered();
     }
 }

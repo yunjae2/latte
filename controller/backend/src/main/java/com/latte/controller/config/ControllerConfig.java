@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 @RefreshScope
 @Component
 public class ControllerConfig {
+    private Boolean registered;
     private Settings settings;
 
     @NoArgsConstructor

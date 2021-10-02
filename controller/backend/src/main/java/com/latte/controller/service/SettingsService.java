@@ -18,6 +18,7 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRAP_ROOT_VALU
 import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.MINIMIZE_QUOTES;
 import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER;
 
+/* TODO: prohibit config update when not registered */
 @RequiredArgsConstructor
 @Slf4j
 @Service
@@ -46,6 +47,7 @@ public class SettingsService {
     }
 
     public Mono<Void> updateAuth(String username, String password) {
+        /* TODO: register user as git user */
         return applySettings(Settings.builder()
                 .workerUrl(controllerConfig.getSettings().getWorkerUrl())
                 .username(username)
@@ -78,5 +80,20 @@ public class SettingsService {
 
     private void refreshConfig() {
         refreshEndpoint.refresh();
+    }
+
+    public Mono<Boolean> register(Settings settings) {
+        if (controllerConfig.getRegistered()) {
+            log.error("Already registered");
+            throw new IllegalStateException();
+        }
+
+        /* TODO: register user as git user */
+        return applySettings(settings)
+                .then(Mono.just(true));
+    }
+
+    public Mono<Boolean> checkRegistered() {
+        return Mono.just(controllerConfig.getRegistered());
     }
 }
