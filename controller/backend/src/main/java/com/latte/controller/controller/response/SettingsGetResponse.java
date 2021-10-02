@@ -1,7 +1,6 @@
 package com.latte.controller.controller.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.latte.controller.config.ControllerConfig;
+import com.latte.controller.config.ControllerConfig.Settings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,10 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class SettingsGetResponse {
-    @JsonProperty("controller")
-    private ControllerConfig controllerConfig;
+    private Settings settings;
 
-    public static SettingsGetResponse from(ControllerConfig config) {
-        return new SettingsGetResponse(config);
+    public static SettingsGetResponse from(Settings settings) {
+        return new SettingsGetResponse(settings);
     }
 }

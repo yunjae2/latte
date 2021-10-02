@@ -9,7 +9,9 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class WorkerUpdateRequest {
+public class AuthUpdateRequest {
     @NotBlank
-    private String workerUrl;
+    private String username;
+    @NotBlank
+    private String password;
 }

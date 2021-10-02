@@ -20,7 +20,7 @@ public class WorkerClient {
 
     public WorkerClient(ControllerConfig controllerConfig) {
         webClient = WebClient.builder()
-                .baseUrl(controllerConfig.getWorker().getUrl())
+                .baseUrl(controllerConfig.getSettings().getWorkerUrl())
                 .codecs(clientCodecConfigurer -> {
                     clientCodecConfigurer.registerDefaults(false);
                     clientCodecConfigurer.customCodecs().register(new IndentableServerSentEventHttpMessageReader());

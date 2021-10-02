@@ -1,6 +1,6 @@
 package com.latte.controller.controller;
 
-import com.latte.controller.controller.request.GitUpdateRequest;
+import com.latte.controller.controller.request.AuthUpdateRequest;
 import com.latte.controller.controller.request.SettingsUpdateRequest;
 import com.latte.controller.controller.request.WorkerUpdateRequest;
 import com.latte.controller.controller.response.SettingsGetResponse;
@@ -27,25 +27,25 @@ public class SettingsController {
 
     @PutMapping("/update")
     public Mono<SettingsGetResponse> update(@Valid @RequestBody SettingsUpdateRequest settingsUpdateRequest) {
-        return settingsService.update(settingsUpdateRequest.getControllerConfig())
-                .flatMap(v -> settingsService.get())
+        return settingsService.update(settingsUpdateRequest.getSettings())
+                .then(settingsService.get())
                 .map(SettingsGetResponse::from)
                 .doOnSuccess(v -> log.info("Settings updated successfully"));
     }
 
     @PutMapping("/update/worker")
     public Mono<SettingsGetResponse> update(@Valid @RequestBody WorkerUpdateRequest workerUpdateRequest) {
-        return settingsService.updateWorker(workerUpdateRequest.getWorker())
-                .flatMap(v -> settingsService.get())
+        return settingsService.updateWorker(workerUpdateRequest.getWorkerUrl())
+                .then(settingsService.get())
                 .map(SettingsGetResponse::from)
                 .doOnSuccess(v -> log.info("Worker settings updated successfully"));
     }
 
-    @PutMapping("/update/git")
-    public Mono<SettingsGetResponse> update(@Valid @RequestBody GitUpdateRequest gitUpdateRequest) {
-        return settingsService.updateGit(gitUpdateRequest.getGit())
-                .flatMap(v -> settingsService.get())
+    @PutMapping("/update/auth")
+    public Mono<SettingsGetResponse> update(@Valid @RequestBody AuthUpdateRequest authUpdateRequest) {
+        return settingsService.updateAuth(authUpdateRequest.getUsername(), authUpdateRequest.getPassword())
+                .then(settingsService.get())
                 .map(SettingsGetResponse::from)
-                .doOnSuccess(v -> log.info("Git settings updated successfully"));
+                .doOnSuccess(v -> log.info("Auth settings updated successfully"));
     }
 }

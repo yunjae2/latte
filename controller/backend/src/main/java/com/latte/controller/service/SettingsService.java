@@ -3,8 +3,7 @@ package com.latte.controller.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.latte.controller.config.ControllerConfig;
-import com.latte.controller.config.ControllerConfig.Git;
-import com.latte.controller.config.ControllerConfig.Worker;
+import com.latte.controller.config.ControllerConfig.Settings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.endpoint.RefreshEndpoint;
@@ -30,38 +29,45 @@ public class SettingsService {
     private final RefreshEndpoint refreshEndpoint;
     private final ControllerConfig controllerConfig;
 
-    public Mono<ControllerConfig> get() {
-        return Mono.just(controllerConfig.toPublicConfig());
+    public Mono<Settings> get() {
+        return Mono.fromSupplier(() -> controllerConfig.getSettings().toPublicSettings());
     }
 
-    public Mono<Void> update(ControllerConfig newConfig) {
-        return Mono.fromRunnable(() -> updateSettings(newConfig));
+    public Mono<Void> update(Settings settings) {
+        return applySettings(settings);
     }
 
-    public Mono<Void> updateWorker(Worker worker) {
+    public Mono<Void> updateWorker(String workerUrl) {
+        return applySettings(Settings.builder()
+                .workerUrl(workerUrl)
+                .username(controllerConfig.getSettings().getUsername())
+                .password(controllerConfig.getSettings().getPassword())
+                .build());
+    }
+
+    public Mono<Void> updateAuth(String username, String password) {
+        return applySettings(Settings.builder()
+                .workerUrl(controllerConfig.getSettings().getWorkerUrl())
+                .username(username)
+                .password(password)
+                .build());
+    }
+
+    private Mono<Void> applySettings(Settings settings) {
         ControllerConfig newConfig = ControllerConfig.builder()
-                .worker(worker)
-                .git(controllerConfig.getGit())
+                .registered(true)
+                .settings(settings)
                 .build();
 
-        return Mono.fromRunnable(() -> updateSettings(newConfig));
+        return Mono.fromRunnable(() -> applyConfig(newConfig));
     }
 
-    public Mono<Void> updateGit(Git git) {
-        ControllerConfig newConfig = ControllerConfig.builder()
-                .worker(controllerConfig.getWorker())
-                .git(git)
-                .build();
-
-        return Mono.fromRunnable(() -> updateSettings(newConfig));
+    private void applyConfig(ControllerConfig controllerConfig) {
+        writeConfig(controllerConfig);
+        refreshConfig();
     }
 
-    private void updateSettings(ControllerConfig controllerConfig) {
-        writeSettings(controllerConfig);
-        refreshSettings();
-    }
-
-    private void writeSettings(ControllerConfig controllerConfig) {
+    private void writeConfig(ControllerConfig controllerConfig) {
         try {
             mapper.writeValue(SETTINGS_PATH.toFile(), controllerConfig);
         } catch (IOException e) {
@@ -70,7 +76,7 @@ public class SettingsService {
         }
     }
 
-    private void refreshSettings() {
+    private void refreshConfig() {
         refreshEndpoint.refresh();
     }
 }

@@ -1,6 +1,6 @@
 package com.latte.controller.controller.request;
 
-import com.latte.controller.config.ControllerConfig.Git;
+import com.latte.controller.config.ControllerConfig.Settings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +11,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class GitUpdateRequest {
+public class SettingsRegisterRequest {
     @Valid
     @NotNull
-    Git git;
+    private Settings settings;
 }

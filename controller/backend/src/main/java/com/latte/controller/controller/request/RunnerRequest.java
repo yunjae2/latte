@@ -14,6 +14,8 @@ public class RunnerRequest {
     @NotBlank
     private String testName;
     @NotBlank
+    private String repositoryUrl;
+    @NotBlank
     private String branchName;
     @NotBlank
     private String scriptFilePath;

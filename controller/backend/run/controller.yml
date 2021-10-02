@@ -1,8 +1,5 @@
 controller:
-  worker:
-    url:
-  git:
-    url:
-    token:
-      name:
-      value:
+  settings:
+    workerUrl:
+    username:
+    password:
