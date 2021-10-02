@@ -12,6 +12,7 @@ export default function History() {
             .then(res => {
                 setRecords(res.records);
             })
+            .catch(error => alert("Failed to load history"))
     }, []);
 
     return (

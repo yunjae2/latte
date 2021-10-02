@@ -55,7 +55,7 @@ export default function Settings() {
             .then(res => res.json())
             .then(res => res.controller)
             .then(controller => dispatchSettings({ key: "controller", value: controller }))
-            .catch(error => console.error(error));
+            .catch(error => alert("Failed to update worker setting"));
     };
 
     const requestGitUpdate = () => {
@@ -69,7 +69,7 @@ export default function Settings() {
             .then(res => res.json())
             .then(res => res.controller)
             .then(controller => dispatchSettings({ key: "controller", value: controller }))
-            .catch(error => console.error(error));
+            .catch(error => alert("Failed to update user setting"));
     };
 
     useEffect(() => {
@@ -77,6 +77,7 @@ export default function Settings() {
             .then(res => res.json())
             .then(res => res.controller)
             .then(controller => dispatchSettings({ key: "controller", value: controller }))
+            .catch(error => alert("Failed to load the current settings"));
     }, []);
 
     return (
