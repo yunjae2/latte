@@ -168,8 +168,21 @@ export default function Scripts() {
         setOpenFileContent(null);
     }
 
+    const loadFiles = () => {
+        fetch("/api/script/all")
+            .then(res => res.json())
+            .then(res => res.fileInfos)
+            .then(fetchedFiles => fetchedFiles.map(file => ({
+                key: file.name,
+                modified: +Moment(file.lastModified),
+                size: file.size,
+            })))
+            .then(newFiles => setFiles(newFiles))
+            .catch(error => alert("Failed to load scripts"))
+    }
+
     useEffect(() => {
-        /* TODO: set files */
+        loadFiles();
     }, []);
 
     if (editorOpen) {
