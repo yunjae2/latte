@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import Moment from 'moment'
 import FileBrowser, { Icons } from 'react-keyed-file-browser'
 import 'font-awesome/css/font-awesome.min.css'
-import { CssBaseline } from '@mui/material'
+import { Container, CssBaseline, Divider, TextField } from '@mui/material'
 import 'react-keyed-file-browser/dist/react-keyed-file-browser.css'
 import ScriptEditor from './editor'
+import { Box } from '@mui/system'
 
 const defaultFiles = [
     {
@@ -50,6 +51,10 @@ export default function Scripts() {
     const [editorOpen, setEditorOpen] = useState(false);
     const [openFileName, setOpenFileName] = useState(null);
     const [openFileContent, setOpenFileContent] = useState(null);
+
+    const getRepositoryUrl = () => {
+        return "http://" + window.location.hostname + ":8082/repository";
+    }
 
     const handleCreateFolder = (key) => {
         /* TODO: Create at the server */
@@ -139,20 +144,34 @@ export default function Scripts() {
         return (
             <React.Fragment>
                 <CssBaseline />
-                <FileBrowser
-                    files={files}
-                    icons={Icons.FontAwesome(4)}
+                <Container maxWidth="false">
+                    <Box sx={{ height: 20 }} />
+                    <TextField
+                        fullWidth
+                        label="Repo URL"
+                        defaultValue={getRepositoryUrl()}
+                        variant="standard"
+                        size="small"
+                        InputProps={{ readOnly: true }}
+                    />
+                    <Box sx={{ height: 20 }} />
+                    <Box sx={{ height: 1000, p: 1, border: '2px solid grey', borderRadius: 1 }}>
+                        <FileBrowser
+                            files={files}
+                            icons={Icons.FontAwesome(4)}
 
-                    onCreateFolder={handleCreateFolder}
-                    onCreateFiles={handleCreateFiles}
-                    onMoveFolder={handleRenameFolder}
-                    onMoveFile={handleRenameFile}
-                    onRenameFolder={handleRenameFolder}
-                    onRenameFile={handleRenameFile}
-                    onDeleteFolder={handleDeleteFolder}
-                    onDeleteFile={handleDeleteFile}
-                    onSelectFile={handleSelectFile}
-                />
+                            onCreateFolder={handleCreateFolder}
+                            onCreateFiles={handleCreateFiles}
+                            onMoveFolder={handleRenameFolder}
+                            onMoveFile={handleRenameFile}
+                            onRenameFolder={handleRenameFolder}
+                            onRenameFile={handleRenameFile}
+                            onDeleteFolder={handleDeleteFolder}
+                            onDeleteFile={handleDeleteFile}
+                            onSelectFile={handleSelectFile}
+                        />
+                    </Box>
+                </Container>
             </React.Fragment>
         );
     }
