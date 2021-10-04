@@ -31,6 +31,7 @@ public class ScriptService {
         try {
             return Files.walk(SCRIPT_ROOT)
                     .filter(Files::isRegularFile)
+                    .filter(path -> !SCRIPT_ROOT.relativize(path).startsWith(".git"))
                     .map(path -> FileInfo.fromPath(SCRIPT_ROOT, path))
                     .collect(Collectors.toList());
         } catch (IOException e) {
