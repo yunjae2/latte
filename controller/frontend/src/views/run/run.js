@@ -7,6 +7,7 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import LoadingButton from '@mui/lab/LoadingButton';
 import EventSource from 'eventsource';
+import { CssBaseline } from '@mui/material';
 
 export default function Run() {
     const name = React.useRef();
@@ -22,6 +23,7 @@ export default function Run() {
         setLoading(true);
         let url = "/api/run"
         url += "?testName=" + name.current.value;
+        url += "&repositoryUrl=" + "http://" + window.location.hostname + ":8082/repository";
         url += "&branchName=" + branch.current.value;
         url += "&scriptFilePath=" + script.current.value;
         url += "&rps=" + rps.current.value;
@@ -52,6 +54,7 @@ export default function Run() {
 
     return (
         <React.Fragment>
+            <CssBaseline />
             <Container maxWidth="false">
                 <Box sx={{ height: 20 }} />
                 <Box sx={{ height: 200 }}>
