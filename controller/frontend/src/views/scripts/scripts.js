@@ -53,105 +53,32 @@ export default function Scripts() {
 
     const handleCreateFolder = (key) => {
         /* TODO: Create at the server */
-        setFiles((prevFiles) => prevFiles.concat([{
-            key: key,
-        }]));
+        alert("Not implemented");
     };
 
     const handleCreateFiles = (nfiles, prefix) => {
         /* TODO: Create at the server */
-        setFiles((prevFiles) => {
-            const newFiles = nfiles.map((file) => {
-                let newKey = prefix
-                if (prefix !== '' && prefix.substring(prefix.length - 1, prefix.length) !== '/') {
-                    newKey += '/'
-                }
-                newKey += file.name
-                return {
-                    key: newKey,
-                    size: file.size,
-                    modified: +Moment(),
-                }
-            })
-
-            const uniqueNewFiles = []
-            newFiles.map((newFile) => {
-                let exists = false
-                prevFiles.map((existingFile) => {
-                    if (existingFile.key === newFile.key) {
-                        exists = true
-                    }
-                })
-                if (!exists) {
-                    uniqueNewFiles.push(newFile)
-                }
-            })
-            return prevFiles.concat(uniqueNewFiles)
-        })
+        alert("Not implemented");
     }
 
     const handleRenameFolder = (oldKey, newKey) => {
         /* TODO: Rename from the server */
-        setFiles((prevFiles) => {
-            const newFiles = []
-            prevFiles.map((file) => {
-                if (file.key.substr(0, oldKey.length) === oldKey) {
-                    newFiles.push({
-                        ...file,
-                        key: file.key.replace(oldKey, newKey),
-                        modified: +Moment(),
-                    })
-                } else {
-                    newFiles.push(file)
-                }
-            })
-            return newFiles;
-        })
+        alert("Not implemented");
     };
 
     const handleRenameFile = (oldKey, newKey) => {
         /* TODO: Rename from the server */
-        setFiles((prevFiles) => {
-            const newFiles = []
-            prevFiles.map((file) => {
-                if (file.key === oldKey) {
-                    newFiles.push({
-                        ...file,
-                        key: newKey,
-                        modified: +Moment(),
-                    })
-                } else {
-                    newFiles.push(file)
-                }
-            })
-            return newFiles;
-        });
+        alert("Not implemented");
     };
 
     const handleDeleteFolder = (folderKey) => {
         /* TODO: Delete from the server */
-        setFiles((prevFiles) => {
-            const newFiles = []
-            prevFiles.map((file) => {
-                if (file.key.substr(0, folderKey[0].length) !== folderKey[0]) {
-                    newFiles.push(file)
-                }
-            })
-            return newFiles;
-        });
+        alert("Not implemented");
     }
 
     const handleDeleteFile = (fileKey) => {
         /* TODO: Delete from the server */
-        setFiles((prevFiles) => {
-            const newFiles = []
-            prevFiles.map((file) => {
-                if (file.key !== fileKey[0]) {
-                    newFiles.push(file)
-                }
-            })
-            return newFiles;
-        })
+        alert("Not implemented");
     }
 
     const handleSelectFile = (file) => {
