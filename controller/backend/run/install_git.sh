@@ -13,6 +13,11 @@ sudo mkdir /var/www/git /etc/git &&
 # Git repository
 echo "Creating git repository.."
 sudo ./git_create_repo.sh repository "${USER}" &&
+cp -r scripts/ /var/www/git/repository/ &&
+cd /var/www/git/repository &&
+git add . &&
+git commit -m "Initial commit" &&
+cd - &&
 
 # Git HTTP access auth
 echo "Creating Git authorization.."
