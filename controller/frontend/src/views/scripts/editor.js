@@ -25,6 +25,7 @@ export default function ScriptEditor(props) {
     return (
         <React.Fragment>
             <Container>
+                <Box sx={{ height: 20 }} />
                 <Editor
                     height="80vh"
                     theme="vs-dark"
