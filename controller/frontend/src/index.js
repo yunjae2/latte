@@ -11,6 +11,7 @@ import {
   Route
 } from "react-router-dom";
 import { LinearProgress } from '@mui/material';
+import Scripts from './views/scripts/scripts';
 
 export default function App() {
   const [loading, setLoading] = React.useState(true);
@@ -53,6 +54,9 @@ export default function App() {
             </Route>
             <Route path="/run">
               <Run />
+            </Route>
+            <Route path="/scripts">
+              <Scripts />
             </Route>
             <Route path="/">
               <History />

@@ -18,6 +18,7 @@ const MenuBar = props => {
                 <Tabs value={value} onChange={handleChange}>
                     <Tab label='History' value="/" />
                     <Tab label='Run' value="/run" />
+                    <Tab label='Scripts' value="/scripts" />
                     <Tab label='Settings' value="/settings" />
                 </Tabs>
                 </Toolbar>
