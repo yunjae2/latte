@@ -102,7 +102,12 @@ export default function Scripts() {
                 message,
             }),
         })
-        .catch(error => alert("Commit failed"));
+            .then(res => {
+                if (!Response.ok) {
+                    throw new Error();
+                }
+            })
+            .catch(error => alert("Commit failed"));
 
         loadFiles();
 
