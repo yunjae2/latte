@@ -112,13 +112,11 @@ export default function Scripts() {
                     throw new Error();
                 }
             })
+            .then(() => loadFiles())
+            .then(() => setEditorOpen(false))
+            .then(() => setOpenFileName(null))
+            .then(() => setOpenFileContent(null))
             .catch(error => alert("Commit failed"));
-
-        loadFiles();
-
-        setEditorOpen(false);
-        setOpenFileName(null);
-        setOpenFileContent(null);
     }
 
     const loadFiles = () => {
