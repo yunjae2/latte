@@ -29,6 +29,7 @@ public class SettingsService {
 
     private final RefreshEndpoint refreshEndpoint;
     private final ControllerConfig controllerConfig;
+    private final UserService userService;
 
     public Mono<Settings> get() {
         return Mono.fromSupplier(() -> controllerConfig.getSettings().toPublicSettings());
@@ -47,12 +48,12 @@ public class SettingsService {
     }
 
     public Mono<Void> updateAuth(String username, String password) {
-        /* TODO: register user as git user */
-        return applySettings(Settings.builder()
-                .workerUrl(controllerConfig.getSettings().getWorkerUrl())
-                .username(username)
-                .password(password)
-                .build());
+        return userService.register(username, password)
+                .then(applySettings(Settings.builder()
+                        .workerUrl(controllerConfig.getSettings().getWorkerUrl())
+                        .username(username)
+                        .password(password)
+                        .build()));
     }
 
     private Mono<Void> applySettings(Settings settings) {
@@ -88,8 +89,8 @@ public class SettingsService {
             throw new IllegalStateException();
         }
 
-        /* TODO: register user as git user */
-        return applySettings(settings)
+        return userService.register(settings.getUsername(), settings.getPassword())
+                .then(applySettings(settings))
                 .then(Mono.just(true));
     }
 
