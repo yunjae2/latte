@@ -8,7 +8,10 @@ import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -24,22 +27,10 @@ public class TestExecutionService {
     public Flux<String> execute(String scriptFilePath) {
         String argument = Paths.get(scriptFilePath).toString();
 
-        Process process;
-        try {
-            /* TODO: wrap using fromCallable */
-            process = new ProcessBuilder()
-                    .directory(SOURCE_PATH.toFile())
-                    .command("k6", "run", argument)       // $ k6 run ${SCRIPT}
-                    .redirectErrorStream(true)
-                    .start();
-        } catch (IOException e) {
-            log.error("Failed to run the test", e);
-            throw new IllegalStateException(e);
-        }
-
-        log.info("Running the test..");
-        Flux<DataBuffer> outputBuffer = DataBufferUtils.readInputStream(process::getInputStream, DefaultDataBufferFactory.sharedInstance, DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY);
-        return outputBuffer.map(this::convertToString)
+        return runAsync(SOURCE_PATH.toFile(), "k6", "run", argument)
+                .doOnNext(process -> log.info("Running the test.."))
+                .flatMapMany(process -> DataBufferUtils.readInputStream(process::getInputStream, DefaultDataBufferFactory.sharedInstance, DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY))
+                .map(this::convertToString)
                 .doOnNext(log::info);
     }
 
@@ -48,22 +39,41 @@ public class TestExecutionService {
         return StandardCharsets.UTF_8.decode(byteBuffer).toString();
     }
 
-    public void applyParameters(TestParameters testParameters) {
-        /* TODO: wrap using fromCallable */
+    public Mono<Void> applyParameters(TestParameters testParameters) {
+        return Mono.fromRunnable(() -> applyParametersInternal(testParameters))
+                .subscribeOn(Schedulers.boundedElastic())
+                .then();
+    }
+
+    private void applyParametersInternal(TestParameters testParameters) {
         Long rate = testParameters.getRps();
         String duration = testParameters.getDuration();
         Long vus = testParameters.getRps() * testParameters.getEstimatedLatency() / 1000;
         Long maxVus = testParameters.getRps() * testParameters.getEstimatedPeakLatency() / 1000;
 
         try {
-            new ProcessBuilder()
-                    .directory(SOURCE_PATH.toFile())
-                    .command("../update_parameters.sh", rate.toString(), duration, vus.toString(), maxVus.toString())       // $ k6 run ${SCRIPT}
-                    .redirectErrorStream(true)
-                    .start()
+            run(SOURCE_PATH.toFile(), "../update_parameters.sh", rate.toString(), duration, vus.toString(), maxVus.toString())  // $ k6 run ${SCRIPT}
                     .waitFor();
-        } catch (IOException | InterruptedException e) {
-            log.error("Failed to run the test", e);
+        } catch (InterruptedException e) {
+            log.error("Process interrupted", e);
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private Mono<Process> runAsync(File workingDirectory, String... command) {
+        return Mono.fromCallable(() -> run(workingDirectory, command))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    private Process run(File workingDirectory, String... command) {
+        try {
+            return new ProcessBuilder()
+                    .directory(workingDirectory)
+                    .command(command)
+                    .redirectErrorStream(true)
+                    .start();
+        } catch (IOException e) {
+            log.error("Failed to run the command {} at working directory {}", command, workingDirectory, e);
             throw new IllegalStateException(e);
         }
     }

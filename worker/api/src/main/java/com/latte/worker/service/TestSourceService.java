@@ -8,6 +8,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +20,13 @@ import java.nio.file.Paths;
 public class TestSourceService {
     private static final Path SOURCE_PATH = Paths.get(System.getProperty("user.home"), ".latte", "workspace");
 
-    public void fetch(SourceConfig sourceConfig) {
+    public Mono<Void> fetch(SourceConfig sourceConfig) {
+        return Mono.fromRunnable(() -> fetchInternal(sourceConfig))
+                .subscribeOn(Schedulers.boundedElastic())
+                .then();
+    }
+
+    private void fetchInternal(SourceConfig sourceConfig) {
         log.info("Fetching the script repository...");
         FileSystemUtils.deleteRecursively(SOURCE_PATH.toFile());
         try {

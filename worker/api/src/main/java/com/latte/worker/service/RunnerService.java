@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.concurrent.Semaphore;
 
@@ -20,7 +21,6 @@ public class RunnerService {
     private final Semaphore runnerLock = new Semaphore(1);
 
     public Flux<String> tryRun(RunnerRequest runnerRequest) {
-        /* TODO: Bug that not releasing lock when error occurs before subscription */
         if (runnerLock.tryAcquire()) {
             return run(runnerRequest)
                     .doOnTerminate(runnerLock::release);
@@ -44,9 +44,11 @@ public class RunnerService {
                 .estimatedPeakLatency(runnerRequest.getEstimatedPeakLatency())
                 .build();
 
-        testSourceService.fetch(sourceConfig);
-        testExecutionService.applyParameters(testParameters);
-        return Flux.concat(testExecutionService.execute(runnerRequest.getScriptFilePath()),
-                        testSummaryService.report());
+        return testSourceService.fetch(sourceConfig)
+                .then(testExecutionService.applyParameters(testParameters))
+                .thenMany(Flux.concat(
+                        testExecutionService.execute(runnerRequest.getScriptFilePath()),
+                        testSummaryService.report()))
+                .publishOn(Schedulers.single());
     }
 }
