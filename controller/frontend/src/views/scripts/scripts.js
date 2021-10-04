@@ -155,10 +155,12 @@ export default function Scripts() {
     }
 
     const handleSelectFile = (file) => {
-        setOpenFileName(file.key);
-        /* TODO: Read file content from server */
-        setOpenFileContent(file.content);
-        setEditorOpen(true);
+        fetch("/api/script?fileName=" + file.key)
+            .then(res => res.text())
+            .then(content => setOpenFileContent(content))
+            .then(() => setOpenFileName(file.key))
+            .then(() => setEditorOpen(true))
+            .catch(error => alert("Failed to open the file"));
     }
 
     const handleSaveFile = (fileName, content) => {

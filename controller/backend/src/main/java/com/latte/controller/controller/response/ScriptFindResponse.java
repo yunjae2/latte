@@ -12,10 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ScriptResponse {
+public class ScriptFindResponse {
     private List<FileInfo> fileInfos;
 
-    public static ScriptResponse from(List<FileInfo> fileInfos) {
-        return new ScriptResponse(fileInfos);
+    public static ScriptFindResponse from(List<FileInfo> fileInfos) {
+        return new ScriptFindResponse(fileInfos);
     }
 }

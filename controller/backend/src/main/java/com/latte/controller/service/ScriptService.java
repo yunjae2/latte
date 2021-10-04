@@ -34,4 +34,18 @@ public class ScriptService {
             throw new IllegalStateException(e);
         }
     }
+
+    public Mono<String> readFile(String fileName) {
+        return Mono.fromCallable(() -> getStringInternal(fileName))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    private String getStringInternal(String fileName) {
+        try {
+            return Files.readString(SCRIPT_ROOT.resolve(fileName));
+        } catch (IOException e) {
+            log.error("Failed to read file {}", fileName, e);
+            throw new IllegalStateException(e);
+        }
+    }
 }
