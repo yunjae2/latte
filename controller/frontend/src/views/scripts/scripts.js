@@ -108,7 +108,7 @@ export default function Scripts() {
             }),
         })
             .then(res => {
-                if (!Response.ok) {
+                if (!res.ok) {
                     throw new Error();
                 }
             })
