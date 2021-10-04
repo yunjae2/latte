@@ -12,7 +12,7 @@ sudo mkdir /var/www/git /etc/git &&
 
 # Git repository
 echo "Creating git repository.."
-sudo ./git_create_repo.sh repository &&
+sudo ./git_create_repo.sh repository "${USER}" &&
 
 # Git HTTP access auth
 echo "Creating Git authorization.."
