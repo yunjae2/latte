@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 public class LatteControllerApplication {
 
+    /* TODO: prohibit API accesses when not registered */
     public static void main(String[] args) {
         SpringApplication.run(LatteControllerApplication.class, args);
     }
