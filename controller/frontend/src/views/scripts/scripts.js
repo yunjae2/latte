@@ -90,8 +90,22 @@ export default function Scripts() {
             .catch(error => alert("Failed to open the file"));
     }
 
-    const handleSaveFile = (fileName, content) => {
-        /* TODO: Save the content to the server */
+    const handleCommitFile = (fileName, content, message) => {
+        fetch("/api/script/commit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                fileName,
+                content,
+                message,
+            }),
+        })
+        .catch(error => alert("Commit failed"));
+
+        loadFiles();
+
         setEditorOpen(false);
         setOpenFileName(null);
         setOpenFileContent(null);
@@ -115,7 +129,7 @@ export default function Scripts() {
     }, []);
 
     if (editorOpen) {
-        return <ScriptEditor fileName={openFileName} content={openFileContent} saveFile={handleSaveFile} />
+        return <ScriptEditor fileName={openFileName} content={openFileContent} commitFile={handleCommitFile} />
     } else {
         return (
             <React.Fragment>

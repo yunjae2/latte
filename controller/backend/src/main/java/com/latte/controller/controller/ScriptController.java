@@ -1,13 +1,13 @@
 package com.latte.controller.controller;
 
+import com.latte.controller.controller.request.ScriptCommitRequest;
 import com.latte.controller.controller.response.ScriptFindResponse;
 import com.latte.controller.service.ScriptService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,5 +24,10 @@ public class ScriptController {
     @GetMapping
     public Mono<String> readContent(@RequestParam String fileName) {
         return scriptService.readFile(fileName);
+    }
+
+    @PostMapping("/commit")
+    public Mono<Boolean> commit(@RequestBody @Valid ScriptCommitRequest scriptCommitRequest) {
+        return scriptService.commit(scriptCommitRequest.getFileName(), scriptCommitRequest.getContent(), scriptCommitRequest.getMessage());
     }
 }

@@ -1,19 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { useRef } from 'react';
-import { Button, Container, CssBaseline, Grid } from '@mui/material';
+import { Button, Container, CssBaseline, Grid, TextField } from '@mui/material';
+import { Box } from '@mui/system';
 
 export default function ScriptEditor(props) {
-    const { fileName, content, saveFile } = props;
+    const { fileName, content, commitFile } = props;
     const editorRef = useRef(null);
+    const [message, setMessage] = useState("");
 
     const extractModelRef = (editor, monaco) => {
         editorRef.current = editor;
     }
 
-    const saveContent = (event) => {
+    const handleOnClick = (event) => {
         let newContent = editorRef.current.getValue();
-        saveFile(fileName, newContent);
+        commitFile(fileName, newContent, message);
+    }
+
+    const handleOnChange = (event) => {
+        setMessage(event.target.value);
     }
 
     return (
@@ -27,7 +33,10 @@ export default function ScriptEditor(props) {
                     onMount={extractModelRef}
                     options={{ fontSize: 15 }}
                 />
-                <Button style={{ float: "right" }} onClick={saveContent} variant="contained" size="medium">Save</Button>
+                <Box sx={{ height: 20 }} />
+                <TextField fullWidth label="Commit message" value={message} onChange={handleOnChange} />
+                <Box sx={{ height: 10 }} />
+                <Button style={{ float: "right" }} onClick={handleOnClick} variant="contained" size="">Commit</Button>
             </Container>
         </React.Fragment>
     );

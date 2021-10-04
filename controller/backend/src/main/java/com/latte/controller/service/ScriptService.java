@@ -1,6 +1,8 @@
 package com.latte.controller.service;
 
 import com.latte.controller.dto.FileInfo;
+import com.latte.controller.repository.ScriptRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -14,9 +16,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class ScriptService {
     private static final Path SCRIPT_ROOT = Paths.get("/var/www/git/repository");
+    private final ScriptRepository scriptRepository;
 
     public Mono<List<FileInfo>> findAll() {
         return Mono.fromCallable(() -> findAllInternal())
@@ -47,5 +51,18 @@ public class ScriptService {
             log.error("Failed to read file {}", fileName, e);
             throw new IllegalStateException(e);
         }
+    }
+
+    public Mono<Boolean> commit(String fileName, String content, String message) {
+        return Mono.fromRunnable(() -> commitInternal(fileName, content, message))
+                .subscribeOn(Schedulers.boundedElastic())
+                .then(Mono.just(true))
+                .doOnSuccess(v -> log.info("New commit: {}", message));
+    }
+
+    private void commitInternal(String fileName, String content, String message) {
+        scriptRepository.write(fileName, content)
+                .add(fileName)
+                .commit(message);
     }
 }
