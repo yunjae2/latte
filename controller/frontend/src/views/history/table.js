@@ -8,10 +8,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import { Label, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { ResponsiveContainer, Label, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { TablePagination, Checkbox, TableSortLabel, accordionSummaryClasses } from '@mui/material';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import _, { max } from 'lodash';
 
 const grayCell = {
     backgroundColor: "F0F0F0"
@@ -148,6 +148,7 @@ function Row(props) {
 
 function LatencyDistChart(props) {
     const { rows } = props;
+    const [maxYAxis, setMaxYAxis] = React.useState(0);
 
     const getStroke = num => {
         const strokes = [
@@ -167,6 +168,17 @@ function LatencyDistChart(props) {
 
         return strokes[num];
     }
+
+    React.useEffect(() => {
+        let maxValues = rows.map(row => row.latency)
+            .map(latency => {
+                let values = Object.keys(latency)
+                    .filter(key => key.startsWith("p"))
+                    .map(key => latency[key].toFixed(0));
+                return Math.max(...values);
+            });
+        setMaxYAxis(Math.max(...maxValues));
+    }, [rows]);
 
     const convertToChartData = (rows) => {
         let latencies = rows.map(row => row.latency)
@@ -188,28 +200,30 @@ function LatencyDistChart(props) {
         return converted;
     }
 
+    const calcDomain = () => {
+        return [0, maxYAxis];
+    }
+
     return (
         <React.Fragment>
             <Box sx={{ margin: 1 }}>
-                <Typography variant="h6" gutterBottom component="div">
-                    Latency distribution
-                </Typography>
-
-                <LineChart width={600} height={300} data={convertToChartData(rows)} margin={{ top: 5, right: 20, bottom: 5, left: 15 }}>
-                    <Tooltip />
-                    <XAxis dataKey="percentile">
-                        <Label value="Percentile" position="insideBottom" offset={0} />
-                    </XAxis>
-                    <YAxis tick={{ dx: -10 }}>
-                        <Label dx={-10} value="Latency (ms)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
-                    </YAxis>
-                    <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                    <Legend align="right" />
-                    {_.range(rows.length).map(rowId => {
-                        return <Line name={rows[rowId].name} dataKey={x => x.value[rowId]} stroke={getStroke(rowId)} label={<LatencyLabel />} />
-                    })
-                    }
-                </LineChart>
+                <ResponsiveContainer width="80%" height={300}>
+                    <LineChart data={convertToChartData(rows)} margin={{ top: 5, right: 20, bottom: 5, left: 15 }}>
+                        <Tooltip />
+                        <XAxis dataKey="percentile">
+                            <Label value="Percentile" position="insideBottom" offset={0} />
+                        </XAxis>
+                        <YAxis tick={{ dx: -10 }} domain={calcDomain()} >
+                            <Label dx={-10} value="Latency (ms)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+                        </YAxis>
+                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                        <Legend layout="horizontal" verticalAlign="top" align="center" />
+                        {_.range(rows.length).map(rowId => {
+                            return <Line name={rows[rowId].name} dataKey={x => x.value[rowId]} stroke={getStroke(rowId)} label={<LatencyLabel />} />
+                        })
+                        }
+                    </LineChart>
+                </ResponsiveContainer>
             </Box>
         </React.Fragment>
     );
