@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,8 +8,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import { Label, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import { TablePagination, Checkbox, TableSortLabel } from '@mui/material';
+import { Label, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { TablePagination, Checkbox, TableSortLabel, accordionSummaryClasses } from '@mui/material';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
@@ -47,7 +46,7 @@ function EnhancedTableCell(props) {
             style={style}
         >
             {label}
-            <br/>
+            <br />
             <TableSortLabel
                 active={orderBy === id}
                 direction={orderBy === id ? order : 'asc'}
@@ -97,32 +96,28 @@ EnhancedTableHead.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
-/* TODO: show VU stats */
-function convertToChartData(latency) {
-    let data = Object.keys(latency).filter(key => key.startsWith("p"))
-        .map(key => ({
-            percentile: key.replace("_", "."),
-            value: latency[key],
-        }));
-    return data;
-}
-
 function LatencyLabel(props) {
     const { x, y, stroke, value } = props;
 
     return (
         <text x={x} y={y} dy={-10} fill={stroke} textAnchor="middle">
-            {value.toFixed(0)}
         </text>
     );
 }
 
 function Row(props) {
-    const { row } = props;
+    const { row, isActive, setActiveRows } = props;
     const [open, setOpen] = React.useState(false);
 
     const handleRowClick = () => {
         setOpen((prevOpen) => !prevOpen);
+        setActiveRows((prevActiveRows) => {
+            if (prevActiveRows.includes(row)) {
+                return prevActiveRows.filter(activeRow => (activeRow !== row));
+            } else {
+                return [...prevActiveRows, row];
+            }
+        });
     }
 
     const displayDuration = (duration) => {
@@ -131,7 +126,7 @@ function Row(props) {
 
     return (
         <React.Fragment>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} onClick={handleRowClick}>
+            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} onClick={handleRowClick} selected={isActive}>
                 <TableCell align="right" />
                 <TableCell colSpan={2}>
                     {row.name}
@@ -147,31 +142,79 @@ function Row(props) {
                 <TableCell align="right">{row.latency.p99_9.toFixed(0)}</TableCell>
                 <TableCell align="right">{row.latency.p99_99.toFixed(0)}</TableCell>
             </TableRow>
-            <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>
-                            <Typography variant="h6" gutterBottom component="div">
-                                Latency distribution
-                            </Typography>
-                            <LineChart width={600} height={300} data={convertToChartData(row.latency)} margin={{ top: 5, right: 20, bottom: 5, left: 15 }}>
-                                <Tooltip />
-                                <XAxis dataKey="percentile">
-                                    <Label value="Percentile" position="insideBottom" offset={0} />
-                                </XAxis>
-                                <YAxis tick={{ dx: -10 }}>
-                                    <Label dx={-10} value="Latency (ms)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
-                                </YAxis>
-                                <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                                <Line dataKey="value" stroke="#8884d8" label={<LatencyLabel />} />
-                            </LineChart>
-                        </Box>
-                    </Collapse>
-                </TableCell>
-            </TableRow>
         </React.Fragment>
     );
 }
+
+function LatencyDistChart(props) {
+    const { rows } = props;
+
+    const getStroke = num => {
+        const strokes = [
+            "#000000",
+            "#E69F00",
+            "#56B4E9",
+            "#009E73",
+            "#F0E442",
+            "#0072B2",
+            "#D55E00",
+            "#CC79A7",
+        ]
+
+        if (num >= strokes.length) {
+            return strokes[strokes.length - 1];
+        }
+
+        return strokes[num];
+    }
+
+    const convertToChartData = (rows) => {
+        let latencies = rows.map(row => row.latency)
+            .map(latency => {
+                return Object.keys(latency)
+                    .filter(key => key.startsWith("p"))
+                    .map(key => ({
+                        percentile: key.replace("_", "."),
+                        value: latency[key].toFixed(0),
+                    }));
+            });
+
+
+        let converted = _.unzip(latencies).map(latency => {
+            return latency.map(row => ({ ...row, value: [row.value] }))
+                .reduce((prev, cur) => ({ ...prev, value: prev.value.concat(cur.value) }))
+        });
+
+        return converted;
+    }
+
+    return (
+        <React.Fragment>
+            <Box sx={{ margin: 1 }}>
+                <Typography variant="h6" gutterBottom component="div">
+                    Latency distribution
+                </Typography>
+
+                <LineChart width={600} height={300} data={convertToChartData(rows)} margin={{ top: 5, right: 20, bottom: 5, left: 15 }}>
+                    <Tooltip />
+                    <XAxis dataKey="percentile">
+                        <Label value="Percentile" position="insideBottom" offset={0} />
+                    </XAxis>
+                    <YAxis tick={{ dx: -10 }}>
+                        <Label dx={-10} value="Latency (ms)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+                    </YAxis>
+                    <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                    <Legend align="right" />
+                    {_.range(rows.length).map(rowId => {
+                        return <Line name={rows[rowId].name} dataKey={x => x.value[rowId]} stroke={getStroke(rowId)} label={<LatencyLabel />} />
+                    })
+                    }
+                </LineChart>
+            </Box>
+        </React.Fragment>
+    );
+}
+
 
 export default function CollapsibleTable(props) {
     const { rows } = props;
@@ -179,6 +222,7 @@ export default function CollapsibleTable(props) {
     const [orderBy, setOrderBy] = React.useState('calories');
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [activeRows, setActiveRows] = React.useState([]);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -198,6 +242,7 @@ export default function CollapsibleTable(props) {
 
     return (
         <React.Fragment>
+            <LatencyDistChart rows={activeRows} />
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table" size="small">
                     <EnhancedTableHead
@@ -210,7 +255,7 @@ export default function CollapsibleTable(props) {
                         {rows.sort(getComparator(order, orderBy))
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => (
-                        <Row key={row.id} row={row} />
+                                <Row key={row.id} row={row} isActive={activeRows.includes(row)} setActiveRows={setActiveRows} />
                             ))}
                     </TableBody>
                     <TablePagination
