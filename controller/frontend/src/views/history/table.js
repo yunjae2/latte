@@ -8,8 +8,10 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TablePagination, TableSortLabel } from '@mui/material';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import _, { method } from 'lodash';
 import LatencyChart from './latency_chart';
+import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const grayCell = {
     backgroundColor: "F0F0F0"
@@ -69,7 +71,7 @@ function EnhancedTableHead(props) {
                 <EnhancedTableCell id="date" align="center" label="Date" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="rps" align="right" label="TPS" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="duration" align="right" label="Duration" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
-                <TableCell colSpan={7} align="center" size="small">Latency&nbsp;(ms)</TableCell>
+                <TableCell colSpan={8} align="center" size="small">Latency&nbsp;(ms)</TableCell>
             </TableRow>
             <TableRow>
                 <EnhancedTableCell id="latency.min" align="right" label="min" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} style={grayCell} />
@@ -79,6 +81,7 @@ function EnhancedTableHead(props) {
                 <EnhancedTableCell id="latency.p99" align="right" label="p99" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="latency.p99_9" align="right" label="p99.9" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="latency.p99_99" align="right" label="p99.99" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
+                <TableCell />
             </TableRow>
         </TableHead>
     );
@@ -94,22 +97,43 @@ EnhancedTableHead.propTypes = {
 };
 
 function Row(props) {
-    const { row, isActive, setActiveRows } = props;
+    const { row, isActive, setActiveRowIds, refresh } = props;
     const [open, setOpen] = React.useState(false);
 
     const handleRowClick = () => {
         setOpen((prevOpen) => !prevOpen);
-        setActiveRows((prevActiveRows) => {
-            if (prevActiveRows.includes(row)) {
-                return prevActiveRows.filter(activeRow => (activeRow !== row));
+        setActiveRowIds((prevActiveRowIds) => {
+            if (prevActiveRowIds.includes(row.id)) {
+                return prevActiveRowIds.filter(id => (id !== row.id));
             } else {
-                return [...prevActiveRows, row];
+                return [...prevActiveRowIds, row.id];
             }
         });
     }
 
     const displayDuration = (duration) => {
         return Math.floor(duration / 60) + ":" + String(duration % 60).padStart(2, '0');
+    }
+
+    const deleteRow = (event) => {
+        event.stopPropagation();
+        fetch("/api/history?" + new URLSearchParams({ id: row.id }),
+            { method: "DELETE" }
+        )
+            .then(res => res.json())
+            .then(res => res.success)
+            .then(success => {
+                if (success === false || success === "false") {
+                    throw new Error();
+                }
+            })
+            .catch(error => alert("Failed to delete history"))
+            .finally(() => {
+                refresh();
+                if (isActive) {
+                    setActiveRowIds((prevActiveRowIds) => prevActiveRowIds.filter(id => (id !== row.id)));
+                }
+            })
     }
 
     return (
@@ -129,18 +153,19 @@ function Row(props) {
                 <TableCell align="right">{row.latency.p99.toFixed(0)}</TableCell>
                 <TableCell align="right">{row.latency.p99_9.toFixed(0)}</TableCell>
                 <TableCell align="right">{row.latency.p99_99.toFixed(0)}</TableCell>
+                <TableCell align="right"><DeleteOutlineIcon fontSize='small' onClick={deleteRow} style={{ cursor: 'pointer' }} /></TableCell>
             </TableRow>
         </React.Fragment>
     );
 }
 
 export default function HistoryTable(props) {
-    const { rows } = props;
+    const { rows, reloadRows } = props;
     const [order, setOrder] = React.useState('desc');
     const [orderBy, setOrderBy] = React.useState('date');
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [activeRows, setActiveRows] = React.useState([]);
+    const [activeRowIds, setActiveRowIds] = React.useState([]);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -160,7 +185,7 @@ export default function HistoryTable(props) {
 
     return (
         <React.Fragment>
-            <LatencyChart rows={activeRows} />
+            <LatencyChart rows={rows.filter(row => activeRowIds.includes(row.id))} />
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table" size="small">
                     <EnhancedTableHead
@@ -173,7 +198,7 @@ export default function HistoryTable(props) {
                         {rows.sort(getComparator(order, orderBy))
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => (
-                                <Row key={row.id} row={row} isActive={activeRows.includes(row)} setActiveRows={setActiveRows} />
+                                <Row key={row.id} row={row} isActive={activeRowIds.includes(row.id)} setActiveRowIds={setActiveRowIds} refresh={reloadRows} />
                             ))}
                     </TableBody>
                     <TablePagination
