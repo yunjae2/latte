@@ -18,10 +18,10 @@ const grayCell = {
 }
 
 function descendingComparator(a, b, orderBy) {
-    if (_.get(a, orderBy) < _.get(b, orderBy)) {
+    if (_.get(a, orderBy) > _.get(b, orderBy)) {
         return -1;
     }
-    if (_.get(a, orderBy) > _.get(b, orderBy)) {
+    if (_.get(a, orderBy) < _.get(b, orderBy)) {
         return 1;
     }
     return 0;
