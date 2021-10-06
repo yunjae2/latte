@@ -1,7 +1,7 @@
 #!/bin/bash
 GIT_DIR="/var/www/git"
 REPO_NAME=$1
-USER=$2
+USER_NAME=$2
 
 mkdir -p "${GIT_DIR}/${REPO_NAME}"
 cd "${GIT_DIR}/${REPO_NAME}"
@@ -13,10 +13,5 @@ git config http.uploadpack true
 git config receive.denyCurrentBranch updateInstead
 git update-server-info
 
-groupadd latteusers
-usermod -a -G latteusers apache
-usermod -a -G latteusers "${USER}"
-
-chgrp -R latteusers "${GIT_DIR}/${REPO_NAME}"
-chmod -R 770 "${GIT_DIR}/${REPO_NAME}"
+chown -R "${USER_NAME}":"${USER_NAME}" "${GIT_DIR}/${REPO_NAME}"
 echo "Git repository '${REPO_NAME}' created in ${GIT_DIR}/${REPO_NAME}"

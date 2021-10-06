@@ -22,11 +22,13 @@ cd - &&
 # Git HTTP access auth
 echo "Creating Git authorization.."
 sudo touch /etc/git/git-auth &&
-sudo chown root:apache /etc/git/git-auth &&
+sudo chown "${USER}":"${USER}" /etc/git/git-auth &&
 sudo chmod 640 /etc/git/git-auth &&
 
 echo "Configuring Git port.."
 sudo sed -i 's/^Listen.*/Listen '$SVN_PORT'/' /etc/httpd/conf/httpd.conf
+sudo sed -i 's/^User.*/User '${USER}'/' /etc/httpd/conf/httpd.conf
+sudo sed -i 's/^Group.*/Group '${USER}'/' /etc/httpd/conf/httpd.conf
 
 sleep 10
 
