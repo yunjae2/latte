@@ -64,4 +64,9 @@ public class HistoryService {
                 .result(summary)
                 .build();
     }
+
+    public Mono<Boolean> delete(Long id) {
+        return Mono.fromRunnable(() -> historyRepository.deleteById(id))
+                .thenReturn(true);
+    }
 }
