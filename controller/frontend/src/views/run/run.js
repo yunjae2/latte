@@ -3,8 +3,6 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import LoadingButton from '@mui/lab/LoadingButton';
 import EventSource from 'eventsource';
 import { CssBaseline } from '@mui/material';
@@ -17,6 +15,11 @@ export default function Run() {
     const duration = React.useRef();
     const [output, setOutput] = React.useState("");
     const [loading, setLoading] = React.useState(false);
+    const bottomRef = React.useRef();
+
+    const scrollToBottom = () => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
 
     const requestRun = () => {
         setOutput("");
@@ -36,6 +39,7 @@ export default function Run() {
         let running = false;
         eventSource.onmessage = e => {
             setOutput(output => output + e.data);
+            scrollToBottom();
             running = true;
         };
 
@@ -80,9 +84,10 @@ export default function Run() {
                         </Grid>
                     </Grid>
                 </Box>
-                <SyntaxHighlighter language="shell" style={atomOneDark} codeTagProps={{ style: { fontSize: 16 } }}>
+                <Box height="70%" paddingLeft="20" paddingBottom="10" style={{ backgroundColor: "#282c34", color: "#D4D4D4", fontFamily: "Courier", whiteSpace: "pre", overflowY: "scroll" }}>
                     {output}
-                </SyntaxHighlighter>
+                    <div ref={bottomRef} />
+                </Box>
             </Container>
         </React.Fragment>
     );
