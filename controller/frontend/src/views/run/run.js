@@ -56,6 +56,36 @@ export default function Run() {
         }
     }
 
+    const requestReplay = () => {
+        setOutput("");
+        setLoading(true);
+        let url = "/api/run/replay"
+        let eventSource = new EventSource(url)
+
+        let running = false;
+        eventSource.onmessage = e => {
+            setOutput(output => output + e.data);
+            scrollToBottom();
+            running = true;
+        };
+
+        eventSource.onerror = e => {
+            if (!running) {
+                if (e.status === 400) {
+                    alert("Invalid arguments");
+                } else {
+                    alert("Another test is running currently");
+                }
+            }
+            eventSource.close();
+            setLoading(false);
+        }
+    };
+
+    React.useEffect(() => {
+        requestReplay();
+    }, []);
+
     return (
         <React.Fragment>
             <CssBaseline />
@@ -72,7 +102,7 @@ export default function Run() {
                         <Grid item sm={4} md={5}>
                             <TextField fullWidth inputRef={script} id="script" label="Script file" variant="outlined" defaultValue="scripts/DemoTest.js" />
                         </Grid>
-                        <Grid item sm={2} sm={1}>
+                        <Grid item sm={2} md={1}>
                             <LoadingButton onClick={requestRun} loading={loading} variant="contained" size="medium">Run</LoadingButton>
                         </Grid>
 

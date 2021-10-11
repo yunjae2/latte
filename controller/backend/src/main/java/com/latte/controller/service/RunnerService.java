@@ -21,15 +21,30 @@ public class RunnerService {
     private final WorkerClient workerClient;
     private final ControllerConfig controllerConfig;
     private final HistoryService historyService;
+    private final ResultRepository resultRepository;
+
 
     public Flux<String> run(RunnerRequest runnerRequest) {
         RunInfo runInfo = buildRunInfo(runnerRequest);
         RunConfig runConfig = buildConfig(runnerRequest);
-        Flux<String> outputs = workerClient.run(runConfig).publish().autoConnect(2);
-        saveSummary(runConfig, runInfo, outputs.last());
-        return outputs.skipLast(1)
-                .doOnNext(log::info);
+
+        Flux<String> outputs = workerClient.run(runConfig).replay().autoConnect(2);
+
+        Flux<String> result = outputs.skipLast(1);
+        Mono<String> summary = outputs.last();
+
+        saveSummary(runConfig, runInfo, summary);
+        cacheResult(result);
+
+        return result.doOnNext(log::info);
     }
+
+    private void cacheResult(Flux<String> result) {
+        result.take(1)  // Avoid caching failed run results */
+                .doOnNext(v -> resultRepository.update(result))
+                .subscribe();
+    }
+
 
     private RunInfo buildRunInfo(RunnerRequest runnerRequest) {
         return RunInfo.builder()
@@ -56,5 +71,9 @@ public class RunnerService {
         summary.flatMap(s -> historyService.save(runConfig, runInfo, s))
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
+    }
+
+    public Flux<String> replay() {
+        return resultRepository.replay();
     }
 }
