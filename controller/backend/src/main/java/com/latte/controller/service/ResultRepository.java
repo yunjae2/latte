@@ -5,7 +5,7 @@ import reactor.core.publisher.Flux;
 
 @Repository
 public class ResultRepository {
-    private volatile Flux<String> result = Flux.empty();
+    private volatile Flux<String> result = Flux.just("No previous result exists");
 
     public void update(Flux<String> result) {
         this.result = result;
