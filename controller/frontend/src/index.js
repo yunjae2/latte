@@ -12,6 +12,7 @@ import {
 } from "react-router-dom";
 import { LinearProgress } from '@mui/material';
 import Scripts from './views/scripts/scripts';
+import GithubCorner from 'react-github-corner';
 
 export default function App() {
   const [loading, setLoading] = React.useState(true);
@@ -46,23 +47,26 @@ export default function App() {
       return <Register setRegistered={setRegistered} />
     } else {
       return (
-        <Router>
-          <MenuBar />
-          <Switch>
-            <Route path="/settings">
-              <Settings />
-            </Route>
-            <Route path="/run">
-              <Run />
-            </Route>
-            <Route path="/scripts">
-              <Scripts />
-            </Route>
-            <Route path="/">
-              <History />
-            </Route>
-          </Switch>
-        </Router>
+        <React.Fragment>
+          <Router>
+            <MenuBar />
+            <Switch>
+              <Route path="/settings">
+                <Settings />
+              </Route>
+              <Route path="/run">
+                <Run />
+              </Route>
+              <Route path="/scripts">
+                <Scripts />
+              </Route>
+              <Route path="/">
+                <History />
+              </Route>
+            </Switch>
+          </Router>
+          <GithubCorner size={50} bannerColor="#64CEAA" href="https://github.com/yunjae2/latte" />
+        </React.Fragment>
       );
     }
   }
