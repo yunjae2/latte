@@ -35,6 +35,7 @@ $ cd latte/controller/frontend/run/
 $ ./install.sh 
 $ ./run.sh
 ```
+When the server is up, register the worker URL (`http://<worker ip>:8081`) and user info.
 
 
 ## Architecture
