@@ -40,7 +40,8 @@ When the server is up, register the worker URL (`http://<worker ip addr>:8081`) 
 
 ## Usage
 1. Configuration
-
+    
+    A worker should be configured to run a test.
     
 
 2. Writing a test script
@@ -54,7 +55,8 @@ When the server is up, register the worker URL (`http://<worker ip addr>:8081`) 
 
     After writing a test script, you can run the test in the `RUN` tab.
     The output of the test, which is the k6 standard output, is displayed at the `RUN` tab.
-    When the testing is done, the latency distribution of the test is recorded and provided through the `HISTORY` tab. 
+    When the testing is done, the latency distribution of the test is recorded and provided through the `HISTORY` tab.
+    For performance reasons, only a single test can be run at a time.
     
 
 ## Architecture
