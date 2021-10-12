@@ -42,7 +42,7 @@ When the server is up, register the worker URL (`http://<worker ip addr>:8081`) 
 1. Configuration
     
     A worker should be configured to run a test.
-    
+    Register or update the worker in the `SETTINGS` tab (skip if configured properly during installation).
 
 2. Writing a test script
 
