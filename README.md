@@ -35,8 +35,27 @@ $ cd latte/controller/frontend/run/
 $ ./install.sh 
 $ ./run.sh
 ```
-When the server is up, register the worker URL (`http://<worker ip>:8081`) and user info.
+When the server is up, register the worker URL (`http://<worker ip addr>:8081`) and user info.
 
+
+## Usage
+1. Configuration
+
+    
+
+2. Writing a test script
+
+    Latte uses k6 internally, so you need to write k6 scripts for testing.
+    The scripts are maintained in the controller and are accessible through git (please check `SCRIPTS` tab on the web console).
+    You can check `scripts/DemoTest.js` from the initial git repository to see how the script is written.
+    Please refer to the [k6 scripting guide](https://k6.io/docs/getting-started/running-k6/) for more usage.
+
+3. Running a test
+
+    After writing a test script, you can run the test in the `RUN` tab.
+    The output of the test, which is the k6 standard output, is displayed at the `RUN` tab.
+    When the testing is done, the latency distribution of the test is recorded and provided through the `HISTORY` tab. 
+    
 
 ## Architecture
 Latte is composed of two nodes: controller and worker.
