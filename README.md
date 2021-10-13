@@ -4,7 +4,7 @@ It is based on [k6](https://github.com/grafana/k6).
 
 
 ## Demo
-demo.gif
+![Demo](docs/images/demo.gif)
 
 
 ## Installation
