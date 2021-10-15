@@ -1,5 +1,5 @@
 # latte
-Latte is a simple fixed-throughput latency testing framework that embraces [closed system model](https://www.usenix.org/legacy/event/nsdi06/tech/full_papers/schroeder/schroeder.pdf).
+Latte is a simple fixed-throughput latency testing framework that embraces [open system model](https://www.usenix.org/legacy/event/nsdi06/tech/full_papers/schroeder/schroeder.pdf).
 It is based on [k6](https://github.com/grafana/k6).
 
 
