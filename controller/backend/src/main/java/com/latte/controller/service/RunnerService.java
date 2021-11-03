@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.time.LocalDateTime;
 
@@ -28,15 +27,16 @@ public class RunnerService {
         RunInfo runInfo = buildRunInfo(runnerRequest);
         RunConfig runConfig = buildConfig(runnerRequest);
 
-        Flux<String> outputs = workerClient.run(runConfig).replay().autoConnect(2);
+        Flux<String> outputs = workerClient.run(runConfig).replay().refCount();
 
         Flux<String> result = outputs.skipLast(1);
         Mono<String> summary = outputs.last();
 
-        saveSummary(runConfig, runInfo, summary);
         cacheResult(result);
 
-        return result.doOnNext(log::info);
+        return result.doOnNext(log::info)
+                .concatWith(saveSummary(runConfig, runInfo, summary)
+                        .cast(String.class));
     }
 
     private void cacheResult(Flux<String> result) {
@@ -67,10 +67,8 @@ public class RunnerService {
                 .build();
     }
 
-    private void saveSummary(RunConfig runConfig, RunInfo runInfo, Mono<String> summary) {
-        summary.flatMap(s -> historyService.save(runConfig, runInfo, s))
-                .subscribeOn(Schedulers.boundedElastic())
-                .subscribe();
+    private Mono<Void> saveSummary(RunConfig runConfig, RunInfo runInfo, Mono<String> summary) {
+        return summary.flatMap(s -> historyService.save(runConfig, runInfo, s));
     }
 
     public Flux<String> replay() {
