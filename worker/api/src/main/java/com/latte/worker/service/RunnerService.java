@@ -41,6 +41,7 @@ public class RunnerService {
     public Flux<String> run(RunnerRequest runnerRequest) {
         SourceConfig sourceConfig = SourceConfig.builder()
                 .repositoryUrl(runnerRequest.getRepositoryUrl())
+                .branchName(runnerRequest.getBranchName())
                 .username(runnerRequest.getUsername())
                 .password(runnerRequest.getPassword())
                 .build();

@@ -13,6 +13,8 @@ import javax.validation.constraints.NotNull;
 public class RunnerRequest {
     @NotBlank
     private String repositoryUrl;
+    @NotBlank
+    private String branchName;
     @NotNull
     private String username;
     @NotNull
