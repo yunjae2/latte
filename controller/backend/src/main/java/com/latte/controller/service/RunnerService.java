@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,13 +22,16 @@ public class RunnerService {
     private final ControllerConfig controllerConfig;
     private final HistoryService historyService;
     private final ResultRepository resultRepository;
-
+    private volatile AtomicBoolean stop = new AtomicBoolean(false);
 
     public Flux<String> run(RunnerRequest runnerRequest) {
         RunInfo runInfo = buildRunInfo(runnerRequest);
         RunConfig runConfig = buildConfig(runnerRequest);
 
-        Flux<String> outputs = workerClient.run(runConfig).replay().refCount();
+        Flux<String> outputs = workerClient.run(runConfig)
+                .takeUntil(output -> stop.getAndSet(false))
+                .replay()
+                .autoConnect();
 
         Flux<String> result = outputs.skipLast(1);
         Mono<String> summary = outputs.last();
@@ -68,10 +72,17 @@ public class RunnerService {
     }
 
     private Mono<Void> saveSummary(RunConfig runConfig, RunInfo runInfo, Mono<String> summary) {
-        return summary.flatMap(s -> historyService.save(runConfig, runInfo, s));
+        return summary
+                .filter(s -> s.startsWith("{") && s.endsWith("}"))
+                .flatMap(s -> historyService.save(runConfig, runInfo, s));
     }
 
     public Flux<String> replay() {
         return resultRepository.replay();
+    }
+
+    public Mono<Boolean> stop() {
+        this.stop.set(true);
+        return Mono.just(true);
     }
 }
