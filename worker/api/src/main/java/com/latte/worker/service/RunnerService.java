@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -18,15 +18,23 @@ public class RunnerService {
     private final TestSourceService testSourceService;
     private final TestExecutionService testExecutionService;
     private final TestSummaryService testSummaryService;
-    private final Semaphore runnerLock = new Semaphore(1);
+    private final AtomicBoolean running = new AtomicBoolean(false);
 
     public Flux<String> tryRun(RunnerRequest runnerRequest) {
-        if (runnerLock.tryAcquire()) {
+        if (!running.getAndSet(true)) {
+            AtomicBoolean released = new AtomicBoolean(false);
             return run(runnerRequest)
-                    .doOnTerminate(runnerLock::release);
+                    .doOnCancel(() -> release(released))
+                    .doOnTerminate(() -> release(released));
         } else {
             log.error("Test already running");
             throw new IllegalStateException();
+        }
+    }
+
+    private void release(AtomicBoolean released) {
+        if (!released.getAndSet(true)) {
+            running.set(false);
         }
     }
 

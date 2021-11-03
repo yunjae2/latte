@@ -29,7 +29,8 @@ public class TestExecutionService {
 
         return runAsync(SOURCE_PATH.toFile(), "k6", "run", argument)
                 .doOnNext(process -> log.info("Running the test.."))
-                .flatMapMany(process -> DataBufferUtils.readInputStream(process::getInputStream, DefaultDataBufferFactory.sharedInstance, DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY))
+                .flatMapMany(process -> DataBufferUtils.readInputStream(process::getInputStream, DefaultDataBufferFactory.sharedInstance, DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY)
+                        .doOnCancel(process::destroy))
                 .map(this::convertToString)
                 .doOnNext(log::info);
     }
