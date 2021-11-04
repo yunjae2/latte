@@ -21,6 +21,15 @@ export default function Run() {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
 
+    const requestStop = () => {
+        fetch("/api/run/stop", {
+            method: "PUT",
+        })
+            .then(res => res.text())
+            .then(res => setLoading(false))
+            .catch(error => alert("Failed to update worker setting"));
+    }
+
     const requestRun = () => {
         setOutput("");
         setLoading(true);
@@ -103,7 +112,10 @@ export default function Run() {
                             <TextField fullWidth inputRef={script} id="script" label="Script file" variant="outlined" defaultValue="scripts/DemoTest.js" />
                         </Grid>
                         <Grid item sm={2} md={1}>
-                            <LoadingButton onClick={requestRun} loading={loading} variant="contained" size="medium">Run</LoadingButton>
+                            {loading
+                                ? <LoadingButton onClick={requestStop} variant="contained" size="medium" color="error">Stop</LoadingButton>
+                                : <LoadingButton onClick={requestRun} variant="contained" size="medium">Run</LoadingButton>
+                            }
                         </Grid>
 
                         <Grid item sm={2} md={1.5}>
