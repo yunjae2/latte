@@ -87,4 +87,10 @@ public class RunnerService {
         this.stop.set(true);
         return Mono.just(true);
     }
+
+    public Mono<Boolean> reset() {
+        return Mono.fromRunnable(resultRepository::initialize)
+                .then(stop())
+                .doOnSuccess(v -> log.info("Reset complete."));
+    }
 }

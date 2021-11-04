@@ -31,4 +31,9 @@ public class RunnerController {
     public Mono<Boolean> stop() {
         return runnerService.stop();
     }
+
+    @PutMapping("/reset")
+    public Mono<Boolean> reset() {
+        return runnerService.reset();
+    }
 }

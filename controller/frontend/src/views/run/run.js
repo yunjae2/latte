@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
 import EventSource from 'eventsource';
-import { CssBaseline } from '@mui/material';
+import { CssBaseline, Button } from '@mui/material';
 
 export default function Run() {
     const name = React.useRef();
@@ -21,13 +21,23 @@ export default function Run() {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
 
+    const requestReset = () => {
+        fetch("/api/run/reset", {
+            method: "PUT",
+        })
+            .then(res => res.text())
+            .then(res => setLoading(false))
+            .catch(error => alert("Failed to reset"))
+            .finally(() => requestReplay());
+    }
+
     const requestStop = () => {
         fetch("/api/run/stop", {
             method: "PUT",
         })
             .then(res => res.text())
             .then(res => setLoading(false))
-            .catch(error => alert("Failed to update worker setting"));
+            .catch(error => alert("Failed to stop the test"));
     }
 
     const requestRun = () => {
@@ -129,6 +139,12 @@ export default function Run() {
                 <Box height="70%" paddingLeft="20" paddingBottom="10" style={{ backgroundColor: "#282c34", color: "#D4D4D4", fontFamily: "Courier", whiteSpace: "pre", overflowY: "scroll" }}>
                     {output}
                     <div ref={bottomRef} />
+                </Box>
+                <Box sx={{ height: 10 }} />
+                <Box>
+                    <Grid container justifyContent="flex-end">
+                        <Button onClick={requestReset} variant="outlined" color="error">Reset</Button>
+                    </Grid>
                 </Box>
             </Container>
         </React.Fragment>
