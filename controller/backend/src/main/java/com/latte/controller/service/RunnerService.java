@@ -24,13 +24,15 @@ public class RunnerService {
     private final ResultRepository resultRepository;
     private volatile AtomicBoolean stop = new AtomicBoolean(false);
 
+    private static final int REPLAY_SIZE = 180;
+
     public Flux<String> run(RunnerRequest runnerRequest) {
         RunInfo runInfo = buildRunInfo(runnerRequest);
         RunConfig runConfig = buildConfig(runnerRequest);
 
         Flux<String> outputs = workerClient.run(runConfig)
                 .takeUntil(output -> stop.getAndSet(false))
-                .replay()
+                .replay(REPLAY_SIZE)
                 .autoConnect();
 
         Flux<String> result = outputs.skipLast(1);
