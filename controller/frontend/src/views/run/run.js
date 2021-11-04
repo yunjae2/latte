@@ -5,16 +5,18 @@ import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
 import EventSource from 'eventsource';
-import { CssBaseline, Button } from '@mui/material';
+import { CssBaseline, Button, Autocomplete } from '@mui/material';
 
 export default function Run() {
     const name = React.useRef();
-    const branch = React.useRef();
-    const script = React.useRef();
+    const [branch, setBranch] = React.useState("");
+    const [script, setScript] = React.useState("");
     const rps = React.useRef(50);
     const duration = React.useRef();
     const [output, setOutput] = React.useState("");
     const [loading, setLoading] = React.useState(false);
+    const [branches, setBranches] = React.useState([]);
+    const [scripts, setScripts] = React.useState([]);
     const bottomRef = React.useRef();
 
     const scrollToBottom = () => {
@@ -46,8 +48,8 @@ export default function Run() {
         let url = "/api/run"
         url += "?testName=" + name.current.value;
         url += "&repositoryUrl=" + "http://" + window.location.hostname + ":8082/repository";
-        url += "&branchName=" + branch.current.value;
-        url += "&scriptFilePath=" + script.current.value;
+        url += "&branchName=" + branch;
+        url += "&scriptFilePath=" + script;
         url += "&rps=" + rps.current.value;
         url += "&duration=" + duration.current.value;
         url += "&estimatedLatency=" + 200;
@@ -101,7 +103,38 @@ export default function Run() {
         }
     };
 
+    const loadBranches = () => {
+        fetch("/api/script/branch/all")
+            .then(res => res.json())
+            .then(res => res.branches)
+            .then(branches => {
+                setBranches(branches);
+                if (branches.includes("master")) {
+                    setBranch("master");
+                } else if (branches.includes("main")) {
+                    setBranch("main");
+                } else {
+                    setBranch(branches[0]);
+                }
+            })
+            .catch(error => alert("Failed to load branches"));
+    }
+
+    const loadScripts = () => {
+        fetch("/api/script/all")
+            .then(res => res.json())
+            .then(res => res.fileInfos)
+            .then(fileInfos => fileInfos.map(fileInfo => fileInfo.name))
+            .then(scripts => setScripts(scripts))
+            .catch(error => alert("Failed to load scripts"));
+    }
+
+    const onBranchChange = (event, value) => setBranch(value);
+    const onScriptChange = (event, value) => setScript(value);
+
     React.useEffect(() => {
+        loadBranches();
+        loadScripts();
         requestReplay();
     }, []);
 
@@ -116,10 +149,10 @@ export default function Run() {
                             <TextField fullWidth inputRef={name} label="Name" variant="outlined" />
                         </Grid>
                         <Grid item sm={3} md={3}>
-                            <TextField fullWidth inputRef={branch} label="Branch" variant="outlined" defaultValue="master"/>
+                            <Autocomplete fullWidth disablePortal value={branch} onChange={onBranchChange} options={branches} renderInput={(params) => <TextField {...params} label="Branch" />} />
                         </Grid>
                         <Grid item sm={4} md={5}>
-                            <TextField fullWidth inputRef={script} id="script" label="Script file" variant="outlined" defaultValue="scripts/DemoTest.js" />
+                            <Autocomplete fullWidth disablePortal value={script} onChange={onScriptChange} options={scripts} renderInput={(params) => <TextField {...params} label="Script" />} />
                         </Grid>
                         <Grid item sm={2} md={1}>
                             {loading

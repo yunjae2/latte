@@ -1,6 +1,7 @@
 package com.latte.controller.controller;
 
 import com.latte.controller.controller.request.ScriptCommitRequest;
+import com.latte.controller.controller.response.BranchFindResponse;
 import com.latte.controller.controller.response.ScriptFindResponse;
 import com.latte.controller.service.ScriptService;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,11 @@ public class ScriptController {
     @PostMapping("/commit")
     public Mono<Boolean> commit(@RequestBody @Valid ScriptCommitRequest scriptCommitRequest) {
         return scriptService.commit(scriptCommitRequest.getFileName(), scriptCommitRequest.getContent(), scriptCommitRequest.getMessage());
+    }
+
+    @GetMapping("/branch/all")
+    public Mono<BranchFindResponse> findBranches() {
+        return scriptService.getBranches()
+                .map(BranchFindResponse::from);
     }
 }

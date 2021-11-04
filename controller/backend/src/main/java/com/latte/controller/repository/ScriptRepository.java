@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Ref;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -61,5 +64,26 @@ public class ScriptRepository {
         }
 
         return this;
+    }
+
+    public List<String> getBranches() {
+        List<Ref> refs;
+        try {
+            refs = Git.open(SCRIPT_ROOT.toFile())
+                    .branchList()
+                    .call();
+        } catch (GitAPIException e) {
+            log.error("Failed to list branches", e);
+            throw new IllegalStateException(e);
+        } catch (IOException e) {
+            log.error("Failed to open the script repository", e);
+            throw new IllegalStateException(e);
+        }
+
+        return refs.stream()
+                .map(Ref::getName)
+                .map(fullName -> fullName.split("/"))
+                .map(fields -> fields[fields.length - 1])
+                .collect(Collectors.toList());
     }
 }

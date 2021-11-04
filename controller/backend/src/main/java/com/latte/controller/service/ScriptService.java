@@ -66,4 +66,10 @@ public class ScriptService {
                 .add(fileName)
                 .commit(message);
     }
+
+    public Mono<List<String>> getBranches() {
+        return Mono.fromCallable(() -> scriptRepository.getBranches())
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnSuccess(branches -> log.info("Branches: " + branches));
+    }
 }
