@@ -53,7 +53,7 @@ export default function Run() {
         url += "&rps=" + rps.current.value;
         url += "&duration=" + duration.current.value;
         url += "&estimatedLatency=" + 200;
-        url += "&estimatedPeakLatency=" + 1000;
+        url += "&estimatedPeakLatency=" + 1000 * 60 * 5;
 
         let eventSource = new EventSource(url)
 
