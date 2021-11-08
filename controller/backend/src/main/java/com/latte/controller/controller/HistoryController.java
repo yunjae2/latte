@@ -3,6 +3,7 @@ package com.latte.controller.controller;
 import com.latte.controller.controller.request.HistorySearchRequest;
 import com.latte.controller.controller.response.HistoryDeleteResponse;
 import com.latte.controller.controller.response.HistoryDetailResponse;
+import com.latte.controller.controller.response.HistoryRewriteResponse;
 import com.latte.controller.controller.response.HistorySearchResponse;
 import com.latte.controller.service.HistoryService;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +47,13 @@ public class HistoryController {
                 .map(HistoryDeleteResponse::from)
                 .doOnSuccess(response -> log.info("Deleted history with id {}", id))
                 .doOnError(error -> log.error("Failed to delete history with id {}", id, error));
+    }
+
+    @PostMapping("/rewrite")
+    public Mono<HistoryRewriteResponse> rewrite() {
+        return historyService.rewriteAll()
+                .thenReturn(HistoryRewriteResponse.success())
+                .doOnSuccess(response -> log.info("History rewritten successfully"))
+                .doOnError(error -> log.error("Failed to rewrite history"));
     }
 }

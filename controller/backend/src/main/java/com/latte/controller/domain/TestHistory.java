@@ -8,10 +8,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Builder
+@Builder(toBuilder = true)
 public class TestHistory {
     @GeneratedValue
     @Id
