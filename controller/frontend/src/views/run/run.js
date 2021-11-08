@@ -11,7 +11,7 @@ export default function Run() {
     const name = React.useRef();
     const [branch, setBranch] = React.useState("");
     const [script, setScript] = React.useState("");
-    const rps = React.useRef(50);
+    const tps = React.useRef(50);
     const duration = React.useRef();
     const [output, setOutput] = React.useState("");
     const [loading, setLoading] = React.useState(false);
@@ -50,7 +50,7 @@ export default function Run() {
         url += "&repositoryUrl=" + "http://" + window.location.hostname + ":8082/repository";
         url += "&branchName=" + branch;
         url += "&scriptFilePath=" + script;
-        url += "&rps=" + rps.current.value;
+        url += "&tps=" + tps.current.value;
         url += "&duration=" + duration.current.value;
         url += "&estimatedLatency=" + 200;
         url += "&estimatedPeakLatency=" + 1000 * 60 * 5;
@@ -162,7 +162,7 @@ export default function Run() {
                         </Grid>
 
                         <Grid item sm={2} md={1.5}>
-                            <TextField fullWidth inputRef={rps} label="RPS" variant="outlined" defaultValue={50} />
+                            <TextField fullWidth inputRef={tps} label="TPS" variant="outlined" defaultValue={50} />
                         </Grid>
                         <Grid item sm={2} md={1.5}>
                             <TextField fullWidth inputRef={duration} label="Duration" variant="outlined" defaultValue="10s" />

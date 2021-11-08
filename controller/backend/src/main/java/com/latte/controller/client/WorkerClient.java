@@ -38,7 +38,7 @@ public class WorkerClient {
                         .queryParam("branchName", runConfig.getBranchName())
                         .queryParam("scriptFilePath", runConfig.getScriptFilePath())
                         .queryParam("duration", runConfig.getDuration())
-                        .queryParam("rps", runConfig.getRps())
+                        .queryParam("tps", runConfig.getTps())
                         .queryParam("estimatedLatency", runConfig.getEstimatedLatency())
                         .queryParam("estimatedPeakLatency", runConfig.getEstimatedPeakLatency())
                         .build())

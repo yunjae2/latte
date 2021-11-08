@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TestParameters {
     private String duration;  // ex. "10s", "3m"
-    private Long rps;
+    private Long tps;
     private Long estimatedLatency;  // ms
     private Long estimatedPeakLatency;    // ms
 }

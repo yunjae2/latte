@@ -47,10 +47,10 @@ public class TestExecutionService {
     }
 
     private void applyParametersInternal(TestParameters testParameters) {
-        Long rate = testParameters.getRps();
+        Long rate = testParameters.getTps();
         String duration = testParameters.getDuration();
-        Long vus = testParameters.getRps() * testParameters.getEstimatedLatency() / 1000;
-        Long maxVus = testParameters.getRps() * testParameters.getEstimatedPeakLatency() / 1000;
+        Long vus = testParameters.getTps() * testParameters.getEstimatedLatency() / 1000;
+        Long maxVus = testParameters.getTps() * testParameters.getEstimatedPeakLatency() / 1000;
 
         try {
             run(SOURCE_PATH.toFile(), "../update_parameters.sh", rate.toString(), duration, vus.toString(), maxVus.toString())  // $ k6 run ${SCRIPT}

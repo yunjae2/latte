@@ -30,7 +30,8 @@ public class TestHistory {
 
     /* TODO: add failed request count */
     private Long requestCount;
-    private Double rps;
+    private Long requestedTps;
+    private Double actualTps;
     private Double duration;  // in ms
 
     /* TODO: add iteration count */

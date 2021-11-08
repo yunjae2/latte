@@ -69,7 +69,7 @@ function EnhancedTableHead(props) {
                 <TableCell rowSpan={2} />
                 <EnhancedTableCell id="name" align="left" label="Name" rowSpan={2} colSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="date" align="center" label="Date" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
-                <EnhancedTableCell id="rps" align="right" label="TPS" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
+                <EnhancedTableCell id="tps" align="right" label="TPS" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="duration" align="right" label="Duration" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <TableCell colSpan={8} align="center" size="small">Latency&nbsp;(ms)</TableCell>
             </TableRow>
@@ -144,7 +144,7 @@ function Row(props) {
                     {row.name}
                 </TableCell>
                 <TableCell align="center">{row.date}</TableCell>
-                <TableCell align="right">{row.rps.toFixed(1)}</TableCell>
+                <TableCell align="right">{row.actualTps.toFixed(1)}</TableCell>
                 <TableCell align="right">{displayDuration((row.duration / 1000).toFixed(0))}</TableCell>
                 <TableCell align="right" style={grayCell}>{row.latency.min.toFixed(0)}</TableCell>
                 <TableCell align="right" style={grayCell}>{row.latency.avg.toFixed(0)}</TableCell>

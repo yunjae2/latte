@@ -67,7 +67,7 @@ public class RunnerService {
                 .branchName(runnerRequest.getBranchName())
                 .scriptFilePath(runnerRequest.getScriptFilePath())
                 .duration(runnerRequest.getDuration())
-                .rps(runnerRequest.getRps())
+                .tps(runnerRequest.getTps())
                 .estimatedLatency(runnerRequest.getEstimatedLatency())
                 .estimatedPeakLatency(runnerRequest.getEstimatedPeakLatency())
                 .build();

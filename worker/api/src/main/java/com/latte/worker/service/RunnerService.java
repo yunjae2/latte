@@ -48,7 +48,7 @@ public class RunnerService {
 
         TestParameters testParameters = TestParameters.builder()
                 .duration(runnerRequest.getDuration())
-                .rps(runnerRequest.getRps())
+                .tps(runnerRequest.getTps())
                 .estimatedLatency(runnerRequest.getEstimatedLatency())
                 .estimatedPeakLatency(runnerRequest.getEstimatedPeakLatency())
                 .build();

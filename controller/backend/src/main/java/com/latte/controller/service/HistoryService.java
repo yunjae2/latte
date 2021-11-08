@@ -50,7 +50,8 @@ public class HistoryService {
                 .scriptFilePath(runConfig.getScriptFilePath())
                 .isSuccessful(true)     // TODO
                 .requestCount(root.at("/metrics/http_reqs/values/count").asLong())
-                .rps(root.at("/metrics/http_reqs/values/rate").asDouble())
+                .requestedTps(runConfig.getTps())
+                .actualTps(root.at("/metrics/http_reqs/values/rate").asDouble())
                 .duration(root.at("/state/testRunDurationMs").asDouble())
                 .latency(Latency.builder()
                         .max(root.at("/metrics/http_req_duration/values/max").asDouble())

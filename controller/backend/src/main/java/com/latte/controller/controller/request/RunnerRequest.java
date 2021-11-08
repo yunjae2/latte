@@ -22,7 +22,7 @@ public class RunnerRequest {
     @NotBlank
     private String duration;  // ex. "10s", "3m"
     @NotNull
-    private Long rps;
+    private Long tps;
     @NotNull
     private Long estimatedLatency;  // ms
     @NotNull
