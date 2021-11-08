@@ -2,6 +2,7 @@ package com.latte.controller.controller;
 
 import com.latte.controller.controller.request.HistorySearchRequest;
 import com.latte.controller.controller.response.HistoryDeleteResponse;
+import com.latte.controller.controller.response.HistoryDetailResponse;
 import com.latte.controller.controller.response.HistorySearchResponse;
 import com.latte.controller.service.HistoryService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,14 @@ public class HistoryController {
     public Mono<HistorySearchResponse> search(HistorySearchRequest historySearchRequest) {
         /* TODO */
         return null;
+    }
+
+    @GetMapping("/{id}/detail")
+    public Mono<HistoryDetailResponse> getDetail(@PathVariable Long id) {
+        return historyService.getDetail(id)
+                .map(HistoryDetailResponse::from)
+                .doOnSuccess(response -> log.info("response: {}", response))
+                .doOnError(error -> log.error("Failed to get test detail of id {}", id, error));
     }
 
     @GetMapping("/all")

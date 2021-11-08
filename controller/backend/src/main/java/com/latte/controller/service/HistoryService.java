@@ -69,4 +69,10 @@ public class HistoryService {
         return Mono.fromRunnable(() -> historyRepository.deleteById(id))
                 .thenReturn(true);
     }
+
+    public Mono<String> getDetail(Long id) {
+        return Mono.fromCallable(() -> historyRepository.findById(id))
+                .map(testHistory -> testHistory.orElseThrow(() -> new IllegalStateException("Failed to get the test detail of id " + id))
+                        .getResult());
+    }
 }
