@@ -49,6 +49,8 @@ public class HistoryService {
                 .branchName(runConfig.getBranchName())
                 .scriptFilePath(runConfig.getScriptFilePath())
                 .isSuccessful(true)     // TODO
+                .successCount(root.at("/metrics/http_req_failed/values/fails").asLong())
+                .failCount(root.at("/metrics/http_req_failed/values/passes").asLong())
                 .requestCount(root.at("/metrics/http_reqs/values/count").asLong())
                 .requestedTps(runConfig.getTps())
                 .actualTps(root.at("/metrics/http_reqs/values/rate").asDouble())

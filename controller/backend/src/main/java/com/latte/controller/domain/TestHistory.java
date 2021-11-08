@@ -28,8 +28,10 @@ public class TestHistory {
     /* TODO: replace with exit status of the test */
     private Boolean isSuccessful;
 
-    /* TODO: add failed request count */
     private Long requestCount;
+    private Long successCount;
+    private Long failCount;
+
     private Long requestedTps;
     private Double actualTps;
     private Double duration;  // in ms
