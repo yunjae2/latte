@@ -26,7 +26,7 @@ public class HistoryController {
 
     @GetMapping("/{id}/detail")
     public Mono<HistoryDetailResponse> getDetail(@PathVariable Long id) {
-        return historyService.getDetail(id)
+        return historyService.get(id)
                 .map(HistoryDetailResponse::from)
                 .doOnSuccess(response -> log.info("response: {}", response))
                 .doOnError(error -> log.error("Failed to get test detail of id {}", id, error));
