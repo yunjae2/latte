@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Modal, TablePagination, TableSortLabel} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Modal, TablePagination, TableSortLabel, Typography} from '@mui/material';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import LatencyChart from './latency_chart';
@@ -100,6 +100,7 @@ EnhancedTableHead.propTypes = {
 function Row(props) {
     const { row, isActive, setActiveRowIds, setIsDetailOpen, setDetailId, refresh } = props;
     const [open, setOpen] = React.useState(false);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
 
     const handleRowClick = () => {
         setOpen((prevOpen) => !prevOpen);
@@ -122,8 +123,12 @@ function Row(props) {
         setIsDetailOpen(true);
     }
 
-    const deleteRow = (event) => {
+    const tryDelete = (event) => {
         event.stopPropagation();
+        setDeleteConfirmOpen(true);
+    }
+
+    const deleteRow = (event) => {
         fetch("/api/history?" + new URLSearchParams({ id: row.id }),
             { method: "DELETE" }
         )
@@ -160,8 +165,35 @@ function Row(props) {
                 <TableCell align="right">{row.latency.p99.toFixed(0)}</TableCell>
                 <TableCell align="right">{row.latency.p99_9.toFixed(0)}</TableCell>
                 <TableCell align="right">{row.latency.p99_99.toFixed(0)}</TableCell>
-                <TableCell align="right"><DeleteOutlineIcon fontSize='small' onClick={deleteRow} style={{ cursor: 'pointer' }} /></TableCell>
+                <TableCell align="right"><DeleteOutlineIcon fontSize='small' onClick={tryDelete} style={{ cursor: 'pointer' }} /></TableCell>
             </TableRow>
+            <Dialog open={deleteConfirmOpen} fullWidth maxWidth="xs">
+                <DialogTitle>Delete confirmation</DialogTitle>
+                <DialogContent>
+                    <Grid container>
+                        <Grid xs={7}>
+                            <Grid container>
+                                <Typography style={{ lineHeight: '2', textAlign: "left", fontWeight: "300" }}>
+                                    <Grid xs={12}>Name</Grid>
+                                    <Grid xs={12}>Date</Grid>
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                        <Grid xs={5}>
+                            <Grid container>
+                                <Typography style={{ lineHeight: '2', textAlign: "left", fontWeight: "400", flex: 1 }}>
+                                    <Grid xs={12}>{row.name}</Grid>
+                                    <Grid xs={12}>{row.date}</Grid>
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="contained" color="error" onClick={deleteRow}>Delete</Button>
+                    <Button onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>
+                </DialogActions>
+            </Dialog>
         </React.Fragment>
     );
 }
