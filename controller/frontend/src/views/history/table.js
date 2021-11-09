@@ -6,12 +6,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { TablePagination, TableSortLabel } from '@mui/material';
+import { Modal, TablePagination, TableSortLabel} from '@mui/material';
 import PropTypes from 'prop-types';
-import _, { method } from 'lodash';
+import _ from 'lodash';
 import LatencyChart from './latency_chart';
-import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import HistoryDetail from './history_detail';
 
 const grayCell = {
     backgroundColor: "F0F0F0"
@@ -97,7 +98,7 @@ EnhancedTableHead.propTypes = {
 };
 
 function Row(props) {
-    const { row, isActive, setActiveRowIds, refresh } = props;
+    const { row, isActive, setActiveRowIds, setIsDetailOpen, setDetailId, refresh } = props;
     const [open, setOpen] = React.useState(false);
 
     const handleRowClick = () => {
@@ -115,6 +116,12 @@ function Row(props) {
         return Math.floor(duration / 60) + ":" + String(duration % 60).padStart(2, '0');
     }
 
+    const openDetail = (event) => {
+        event.stopPropagation();
+        setDetailId(row.id);
+        setIsDetailOpen(true);
+    }
+
     const deleteRow = (event) => {
         event.stopPropagation();
         fetch("/api/history?" + new URLSearchParams({ id: row.id }),
@@ -127,7 +134,7 @@ function Row(props) {
                     throw new Error();
                 }
             })
-            .catch(error => alert("Failed to delete history"))
+            .catch(() => alert("Failed to delete history"))
             .finally(() => {
                 refresh();
                 if (isActive) {
@@ -139,7 +146,7 @@ function Row(props) {
     return (
         <React.Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} onClick={handleRowClick} selected={isActive}>
-                <TableCell align="right" />
+                <TableCell align="right"><InfoOutlinedIcon fontSize='small' color='action' onClick={openDetail} style={{ cursor: 'pointer' }}/></TableCell>
                 <TableCell colSpan={2}>
                     {row.name}
                 </TableCell>
@@ -166,6 +173,8 @@ export default function HistoryTable(props) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [activeRowIds, setActiveRowIds] = React.useState([]);
+    const [isDetailOpen, setIsDetailOpen] = React.useState(false);
+    const [detailId, setDetailId] = React.useState(-1);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -198,9 +207,25 @@ export default function HistoryTable(props) {
                         {rows.sort(getComparator(order, orderBy))
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => (
-                                <Row key={row.id} row={row} isActive={activeRowIds.includes(row.id)} setActiveRowIds={setActiveRowIds} refresh={reloadRows} />
+                                <Row
+                                    key={row.id}
+                                    row={row}
+                                    isActive={activeRowIds.includes(row.id)}
+                                    setActiveRowIds={setActiveRowIds}
+                                    setIsDetailOpen={setIsDetailOpen}
+                                    setDetailId={setDetailId}
+                                    refresh={reloadRows}
+                                />
                             ))}
                     </TableBody>
+                    <Modal
+                        open={isDetailOpen}
+                        onClose={() => setIsDetailOpen(false)}
+                        aria-labelledby="History detail"
+                        aria-describedby="History detail"
+                    >
+                        <HistoryDetail id={detailId} />
+                    </Modal>
                     <TablePagination
                         rowsPerPage={rowsPerPage}
                         rowsPerPageOptions={[10, 20, 50, { label: 'All', value: -1 }]}
