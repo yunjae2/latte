@@ -9,10 +9,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Builder(toBuilder = true)
 public class TestHistory {
     @GeneratedValue
     @Id
@@ -29,6 +27,7 @@ public class TestHistory {
     /* TODO: replace with exit status of the test */
     private Boolean isSuccessful;
 
+    /* HTTP request stats */
     private Long requestCount;
     private Long successCount;
     private Long failCount;
@@ -37,7 +36,9 @@ public class TestHistory {
     private Double actualTps;
     private Double duration;  // in ms
 
-    /* TODO: add iteration count */
+    private Long iterationTotal;
+    private Long iterationSuccess;
+    private Long iterationFail;
     /* TODO: add vuser count (min, max) */
 
     @Embedded
@@ -45,4 +46,40 @@ public class TestHistory {
 
     @Lob
     private String result;
+
+    @Builder(toBuilder = true)
+    public TestHistory(Long id,
+                       String name,
+                       LocalDateTime date,
+                       String branchName,
+                       String scriptFilePath,
+                       Boolean isSuccessful,
+                       Long requestCount,
+                       Long successCount,
+                       Long failCount,
+                       Long requestedTps,
+                       Double actualTps,
+                       Double duration,
+                       Long iterationTotal,
+                       Long iterationFail,
+                       Latency latency,
+                       String result) {
+        this.id = id;
+        this.name = name;
+        this.date = date;
+        this.branchName = branchName;
+        this.scriptFilePath = scriptFilePath;
+        this.isSuccessful = isSuccessful;
+        this.requestCount = requestCount;
+        this.successCount = successCount;
+        this.failCount = failCount;
+        this.requestedTps = requestedTps;
+        this.actualTps = actualTps;
+        this.duration = duration;
+        this.iterationTotal = iterationTotal;
+        this.iterationSuccess = iterationTotal - iterationFail;
+        this.iterationFail = iterationFail;
+        this.latency = latency;
+        this.result = result;
+    }
 }

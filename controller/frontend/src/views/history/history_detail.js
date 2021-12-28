@@ -54,14 +54,31 @@ export default function HistoryDetail(props) {
                     {detail.date} (Duration: {displayDuration((detail.duration / 1000).toFixed(0))})
                 </Typography>
                 <Grid container>
-                    <Grid item xs={3}>
+                    <Grid item xs={1.5}>
                         <Grid container>
                             <Typography variant="subtitle1" sx={{ mt: 2 }} style={{ textAlign: "left", fontWeight: "300"}}>
-                                <Grid item xs={12}>TPS (requested)</Grid>
-                                <Grid item xs={12}>TPS (actual)</Grid>
-                                <Grid item xs={12}>Total</Grid>
-                                <Grid item xs={12}>Success</Grid>
-                                <Grid item xs={12}>Fail</Grid>
+                                <Grid item xs={12}>TPS</Grid>
+                                <Grid item xs={12}><br /></Grid>
+                                <Grid item xs={12}>Iterations</Grid>
+                                <Grid item xs={12}><br /></Grid>
+                                <Grid item xs={12}><br /></Grid>
+                                <Grid item xs={12}>Requests</Grid>
+                                <Grid item xs={12}><br /></Grid>
+                                <Grid item xs={12}><br /></Grid>
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={1.5}>
+                        <Grid container>
+                            <Typography variant="subtitle1" sx={{ mt: 2 }} style={{ textAlign: "left", fontWeight: "300"}}>
+                                <Grid item xs={12}>requested</Grid>
+                                <Grid item xs={12}>actual</Grid>
+                                <Grid item xs={12}>total</Grid>
+                                <Grid item xs={12}>success</Grid>
+                                <Grid item xs={12}>fail</Grid>
+                                <Grid item xs={12}>total</Grid>
+                                <Grid item xs={12}>success</Grid>
+                                <Grid item xs={12}>fail</Grid>
                             </Typography>
                         </Grid>
                     </Grid>
@@ -70,6 +87,9 @@ export default function HistoryDetail(props) {
                             <Typography variant="subtitle1" sx={{ mt: 2 }} style={{ textAlign: "right", fontWeight: "400"}}>
                                 <Grid item xs={12}>{detail.requestedTps?.toFixed(1) ?? "-"}</Grid>
                                 <Grid item xs={12}>{detail.actualTps.toFixed(1)}</Grid>
+                                <Grid item xs={12}>{detail.iterationTotal}</Grid>
+                                <Grid item xs={12}>{detail.iterationSuccess}</Grid>
+                                <Grid item xs={12}>{detail.iterationFail}</Grid>
                                 <Grid item xs={12}>{detail.requestCount}</Grid>
                                 <Grid item xs={12}>{detail.successCount}</Grid>
                                 <Grid item xs={12}>{detail.failCount}</Grid>

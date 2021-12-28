@@ -1,4 +1,4 @@
-import { Counter } from "k6/metrics";
+import { Counter } from "k6/metrics"
 
 export let handleSummary = (data) => {
 	return {
@@ -6,7 +6,11 @@ export let handleSummary = (data) => {
 	}
 }
 
-export const failCounter = new Counter('fail_counter');
+const failCounter = new Counter('fail_counter');
+
+export let abortTest = () => {
+	failCounter.add(1);
+}
 
 export let options = {
 	discardResponseBodies: true,
