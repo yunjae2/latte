@@ -5,11 +5,14 @@ import com.latte.controller.controller.response.HistoryDeleteResponse;
 import com.latte.controller.controller.response.HistoryDetailResponse;
 import com.latte.controller.controller.response.HistoryRewriteResponse;
 import com.latte.controller.controller.response.HistorySearchResponse;
+import com.latte.controller.domain.TestHistory;
 import com.latte.controller.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -29,7 +32,7 @@ public class HistoryController {
     public Mono<HistoryDetailResponse> getDetail(@PathVariable Long id) {
         return historyService.get(id)
                 .map(HistoryDetailResponse::from)
-                .doOnSuccess(response -> log.info("response: {}", response))
+                .doOnSuccess(response -> log.info("Single history fetched; id: {}", id))
                 .doOnError(error -> log.error("Failed to get test detail of id {}", id, error));
     }
 
@@ -37,7 +40,11 @@ public class HistoryController {
     public Mono<HistorySearchResponse> fetchAll() {
         return historyService.getAll()
                 .map(HistorySearchResponse::from)
-                .doOnSuccess(response -> log.info("response: {}", response))
+                .doOnSuccess(response -> log.info("History fetched; ids: {}",
+                        response.getRecords().stream()
+                                .map(TestHistory::getId)
+                                .collect(Collectors.toList()))
+                )
                 .doOnError(error -> log.error("Failed to fetch all history", error));
     }
 
