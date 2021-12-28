@@ -19,6 +19,19 @@ export default function Run() {
     const [scripts, setScripts] = React.useState([]);
     const bottomRef = React.useRef();
 
+    const OUTPUT_BUFFER_SIZE = 1024 * 64;
+
+    const updateOutput = (line) => {
+        setOutput(output => {
+            const newOutput = output + line;
+            if (newOutput.length > OUTPUT_BUFFER_SIZE) {
+                return newOutput.substr(newOutput.length - OUTPUT_BUFFER_SIZE);
+            } else {
+                return newOutput;
+            }
+        });
+    }
+    
     const scrollToBottom = () => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
@@ -59,7 +72,7 @@ export default function Run() {
 
         let running = false;
         eventSource.onmessage = e => {
-            setOutput(output => output + e.data);
+            updateOutput(e.data);
             scrollToBottom();
             running = true;
         };
