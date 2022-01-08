@@ -1,6 +1,8 @@
-import { Grid, Skeleton, Typography } from "@mui/material";
+import { Button, Grid, Skeleton, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import { saveAs } from 'file-saver';
 
 export default function HistoryDetail(props) {
     const { id } = props;
@@ -33,6 +35,10 @@ export default function HistoryDetail(props) {
             .catch(() => alert("Failed to load the history"));
     }
 
+    const downloadLog = () => {
+        saveAs(`/api/history/${id}/log`, `${detail.name}-${detail.date}.log`);
+    }
+
     React.useEffect(() => {
         loadHistoryDetail();
     }, []);
@@ -47,12 +53,27 @@ export default function HistoryDetail(props) {
     } else {
         return (
             <Box sx={style}>
-                <Typography variant="h6">
-                    {detail.name}
-                </Typography>
-                <Typography variant="subtitle1">
-                    {detail.date} (Duration: {displayDuration((detail.duration / 1000).toFixed(0))})
-                </Typography>
+                <Grid container>
+                    <Grid item xs={6}>
+                        <Grid container>
+                            <Grid item xs={12}>
+                                <Typography variant="h6">
+                                    {detail.name}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant="subtitle1">
+                                    {detail.date} (Duration: {displayDuration((detail.duration / 1000).toFixed(0))})
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={6} style={{ textAlign: "right", fontWeight: "400"}}>
+                        <Button size="large" variant="text" onClick={downloadLog} endIcon={<FileDownloadOutlinedIcon />}>
+                            Log
+                        </Button>
+                    </Grid>
+                </Grid>
                 <Grid container>
                     <Grid item xs={1.5}>
                         <Grid container>

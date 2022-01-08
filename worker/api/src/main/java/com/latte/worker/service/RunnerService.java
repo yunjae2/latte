@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RunnerService {
     private final TestSourceService testSourceService;
     private final TestExecutionService testExecutionService;
-    private final TestSummaryService testSummaryService;
+    private final TestResultService testResultService;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     public Flux<String> tryRun(RunnerRequest runnerRequest) {
@@ -55,9 +55,11 @@ public class RunnerService {
 
         return testSourceService.fetch(sourceConfig)
                 .then(testExecutionService.applyParameters(testParameters))
+                .then(testResultService.clean())
                 .thenMany(Flux.concat(
                         testExecutionService.execute(runnerRequest.getScriptFilePath()),
-                        testSummaryService.report()))
+                        testResultService.reportSummary(),
+                        testResultService.reportLog()))
                 .publishOn(Schedulers.single());
     }
 }

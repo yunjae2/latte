@@ -28,15 +28,15 @@ public class HistoryService {
         return Mono.just(historyRepository.findAll());
     }
 
-    public Mono<Void> save(RunConfig runConfig, RunInfo runInfo, String summary) {
-        TestHistory testHistory = buildTestHistory(runConfig, runInfo, summary);
+    public Mono<Void> save(RunConfig runConfig, RunInfo runInfo, String summary, String consoleLog) {
+        TestHistory testHistory = buildTestHistory(runConfig, runInfo, summary, consoleLog);
         return Mono.fromRunnable(() -> {
             historyRepository.save(testHistory);
             log.info("Run history saved successfully");
         });
     }
 
-    private TestHistory buildTestHistory(RunConfig runConfig, RunInfo runInfo, String summary) {
+    private TestHistory buildTestHistory(RunConfig runConfig, RunInfo runInfo, String summary, String consoleLog) {
         return fillSummaryData(TestHistory.builder(), summary)
                 .name(runInfo.getTestName())
                 .date(runInfo.getStartTime())
@@ -45,6 +45,7 @@ public class HistoryService {
                 .isSuccessful(true)     // TODO
                 .requestedTps(runConfig.getTps())
                 .result(summary)
+                .consoleLog(consoleLog)
                 .build();
     }
 

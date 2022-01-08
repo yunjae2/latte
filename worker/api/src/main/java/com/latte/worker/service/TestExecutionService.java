@@ -23,11 +23,12 @@ import java.nio.file.Paths;
 @Service
 public class TestExecutionService {
     private static final Path SOURCE_PATH = Paths.get(System.getProperty("user.home"), ".latte", "workspace");
+    private static final String LOG_FILE = "latte.log";
 
     public Flux<String> execute(String scriptFilePath) {
-        String argument = Paths.get(scriptFilePath).toString();
+        String script = Paths.get(scriptFilePath).toString();
 
-        return runAsync(SOURCE_PATH.toFile(), "k6", "run", argument)
+        return runAsync(SOURCE_PATH.toFile(), "k6", "run", "--console-output", LOG_FILE, "--no-color", script)
                 .doOnNext(process -> log.info("Running the test.."))
                 .flatMapMany(process -> DataBufferUtils.readInputStream(process::getInputStream, DefaultDataBufferFactory.sharedInstance, DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY)
                         .doOnCancel(process::destroy))

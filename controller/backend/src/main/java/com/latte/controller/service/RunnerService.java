@@ -35,13 +35,14 @@ public class RunnerService {
                 .replay(REPLAY_SIZE)
                 .autoConnect();
 
-        Flux<String> result = outputs.skipLast(1);
-        Mono<String> summary = outputs.last();
+        Flux<String> result = outputs.skipLast(2);
+        Mono<String> summary = outputs.takeLast(2).elementAt(0);
+        Mono<String> consoleLog = outputs.takeLast(2).elementAt(1);
 
         cacheResult(result);
 
         return result.doOnNext(log::info)
-                .concatWith(saveSummary(runConfig, runInfo, summary)
+                .concatWith(saveHistory(runConfig, runInfo, summary, consoleLog)
                         .cast(String.class));
     }
 
@@ -73,10 +74,10 @@ public class RunnerService {
                 .build();
     }
 
-    private Mono<Void> saveSummary(RunConfig runConfig, RunInfo runInfo, Mono<String> summary) {
-        return summary
-                .filter(s -> s.startsWith("{") && s.endsWith("}"))
-                .flatMap(s -> historyService.save(runConfig, runInfo, s));
+    private Mono<Void> saveHistory(RunConfig runConfig, RunInfo runInfo, Mono<String> summary, Mono<String> consoleLog) {
+        return Mono.zip(summary, consoleLog)
+                .filter(tuple -> tuple.getT1().startsWith("{") && tuple.getT1().endsWith("}"))
+                .flatMap(tuple -> historyService.save(runConfig, runInfo, tuple.getT1(), tuple.getT2()));
     }
 
     public Flux<String> replay() {

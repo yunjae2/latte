@@ -9,9 +9,14 @@ import com.latte.controller.domain.TestHistory;
 import com.latte.controller.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -34,6 +39,16 @@ public class HistoryController {
                 .map(HistoryDetailResponse::from)
                 .doOnSuccess(response -> log.info("Single history fetched; id: {}", id))
                 .doOnError(error -> log.error("Failed to get test detail of id {}", id, error));
+    }
+
+    @GetMapping(value = "/{id}/log", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public Mono<? extends Resource> downloadLog(@PathVariable Long id) {
+        return historyService.get(id)
+                .filter(testHistory -> Objects.nonNull(testHistory.getConsoleLog()))
+                .map(TestHistory::getConsoleLog)
+                .map(consoleLog -> new ByteArrayResource(consoleLog.getBytes(StandardCharsets.UTF_8)))
+                .doOnSuccess(response -> log.info("Console log downloaded; id: {}", id))
+                .doOnError(error -> log.error("Failed to download the console log of id {}", id, error));
     }
 
     @GetMapping("/all")
