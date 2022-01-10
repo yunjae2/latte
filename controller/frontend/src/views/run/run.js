@@ -81,7 +81,7 @@ export default function Run() {
             if (!running) {
                 if (e.status === 400) {
                     alert("Invalid arguments");
-                } else {
+                } else if (e.status === 500) {
                     alert("Another test is running currently");
                 }
             }
@@ -107,7 +107,7 @@ export default function Run() {
             if (!running) {
                 if (e.status === 400) {
                     alert("Invalid arguments");
-                } else {
+                } else if (e.status === 500) {
                     alert("Another test is running currently");
                 }
             }
