@@ -17,13 +17,16 @@ import reactor.core.publisher.Flux;
 @RefreshScope
 public class WorkerClient {
     private final WebClient webClient;
+    private final int BUFFER_SIZE = 2 * 1024 * 1024;
 
     public WorkerClient(ControllerConfig controllerConfig) {
+        IndentableServerSentEventHttpMessageReader customCodec = new IndentableServerSentEventHttpMessageReader();
+        customCodec.setMaxInMemorySize(BUFFER_SIZE);
         webClient = WebClient.builder()
                 .baseUrl(controllerConfig.getSettings().getWorkerUrl())
                 .codecs(clientCodecConfigurer -> {
                     clientCodecConfigurer.registerDefaults(false);
-                    clientCodecConfigurer.customCodecs().register(new IndentableServerSentEventHttpMessageReader());
+                    clientCodecConfigurer.customCodecs().register(customCodec);
                 })
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
