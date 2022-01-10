@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,15 +26,16 @@ public class HistoryService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public Mono<List<TestHistory>> getAll() {
-        return Mono.just(historyRepository.findAll());
+        return Mono.fromCallable(() -> historyRepository.findAll())
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     public Mono<Void> save(RunConfig runConfig, RunInfo runInfo, String summary, String consoleLog) {
         TestHistory testHistory = buildTestHistory(runConfig, runInfo, summary, consoleLog);
-        return Mono.fromRunnable(() -> {
-            historyRepository.save(testHistory);
-            log.info("Run history saved successfully");
-        });
+        return Mono.fromRunnable(() -> historyRepository.save(testHistory))
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnSuccess(v -> log.info("Run history saved successfully"))
+                .then();
     }
 
     private TestHistory buildTestHistory(RunConfig runConfig, RunInfo runInfo, String summary, String consoleLog) {
@@ -51,11 +53,13 @@ public class HistoryService {
 
     public Mono<Boolean> delete(Long id) {
         return Mono.fromRunnable(() -> historyRepository.deleteById(id))
+                .subscribeOn(Schedulers.boundedElastic())
                 .thenReturn(true);
     }
 
     public Mono<TestHistory> get(Long id) {
         return Mono.fromCallable(() -> historyRepository.findById(id))
+                .subscribeOn(Schedulers.boundedElastic())
                 .map(testHistory -> testHistory.orElseThrow(() -> new IllegalStateException("Failed to get the test history of id " + id)));
     }
 
