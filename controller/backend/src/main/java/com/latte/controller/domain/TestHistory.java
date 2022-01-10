@@ -47,8 +47,7 @@ public class TestHistory {
     @Lob
     private String result;
 
-    @Lob
-    private String consoleLog;
+    private String logPath;
 
     @Builder(toBuilder = true)
     public TestHistory(Long id,
@@ -67,7 +66,7 @@ public class TestHistory {
                        Long iterationFail,
                        Latency latency,
                        String result,
-                       String consoleLog) {
+                       String logPath) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -85,6 +84,6 @@ public class TestHistory {
         this.iterationFail = iterationFail;
         this.latency = latency;
         this.result = result;
-        this.consoleLog = consoleLog;
+        this.logPath = logPath;
     }
 }

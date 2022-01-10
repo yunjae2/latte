@@ -9,8 +9,10 @@ import com.latte.controller.domain.TestHistory.TestHistoryBuilder;
 import com.latte.controller.dto.RunConfig;
 import com.latte.controller.dto.RunInfo;
 import com.latte.controller.repository.HistoryRepository;
+import com.latte.controller.repository.LogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HistoryService {
     private final HistoryRepository historyRepository;
+    private final LogRepository logRepository;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public Mono<List<TestHistory>> getAll() {
@@ -31,14 +34,15 @@ public class HistoryService {
     }
 
     public Mono<Void> save(RunConfig runConfig, RunInfo runInfo, String summary, String consoleLog) {
-        TestHistory testHistory = buildTestHistory(runConfig, runInfo, summary, consoleLog);
-        return Mono.fromRunnable(() -> historyRepository.save(testHistory))
+        return Mono.fromCallable(() -> logRepository.save(consoleLog))
+                .map(logPath -> buildTestHistory(runConfig, runInfo, summary, logPath))
+                .map(historyRepository::save)
                 .subscribeOn(Schedulers.boundedElastic())
                 .doOnSuccess(v -> log.info("Run history saved successfully"))
                 .then();
     }
 
-    private TestHistory buildTestHistory(RunConfig runConfig, RunInfo runInfo, String summary, String consoleLog) {
+    private TestHistory buildTestHistory(RunConfig runConfig, RunInfo runInfo, String summary, String logPath) {
         return fillSummaryData(TestHistory.builder(), summary)
                 .name(runInfo.getTestName())
                 .date(runInfo.getStartTime())
@@ -47,7 +51,7 @@ public class HistoryService {
                 .isSuccessful(true)     // TODO
                 .requestedTps(runConfig.getTps())
                 .result(summary)
-                .consoleLog(consoleLog)
+                .logPath(logPath)
                 .build();
     }
 
@@ -100,5 +104,12 @@ public class HistoryService {
             log.error("Failed to parse summary results", e);
             throw new IllegalStateException(e);
         }
+    }
+
+    public Mono<Resource> getLog(Long id) {
+        return this.get(id)
+                .map(TestHistory::getLogPath)
+                .map(logRepository::getLog)
+                .subscribeOn(Schedulers.boundedElastic());
     }
 }
