@@ -81,7 +81,7 @@ public class RunnerService {
 
     private Mono<Void> saveHistory(RunConfig runConfig, RunInfo runInfo, Mono<String> summary, Mono<String> consoleLog) {
         return Mono.zip(summary, consoleLog)
-                .filter(tuple -> tuple.getT1().startsWith("{") && tuple.getT1().endsWith("}"))
+                .filter(tuple -> !RuntimeStat.hasValidFormat(tuple.getT1()))
                 .flatMap(tuple -> historyService.save(runConfig, runInfo, tuple.getT1(), tuple.getT2()));
     }
 

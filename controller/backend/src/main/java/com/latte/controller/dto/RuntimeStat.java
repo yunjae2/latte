@@ -31,6 +31,15 @@ public class RuntimeStat {
         }
     }
 
+    public static boolean hasValidFormat(String test) {
+        try {
+            objectMapper.readValue(test, RuntimeStat.class);
+        } catch (JsonProcessingException e) {
+            return false;
+        }
+        return true;
+    }
+
     public float getSeconds() {
         long seconds = this.time.toSeconds();
         int milliSeconds = this.time.toMillisPart();
