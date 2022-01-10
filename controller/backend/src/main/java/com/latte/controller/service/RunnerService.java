@@ -5,6 +5,7 @@ import com.latte.controller.config.ControllerConfig;
 import com.latte.controller.controller.request.RunnerRequest;
 import com.latte.controller.dto.RunConfig;
 import com.latte.controller.dto.RunInfo;
+import com.latte.controller.dto.RuntimeStat;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,18 +36,22 @@ public class RunnerService {
                 .replay(REPLAY_SIZE)
                 .autoConnect();
 
-        Flux<String> result = outputs.skipLast(2);
+        Flux<RuntimeStat> results = outputs.skipLast(2)
+                .map(RuntimeStat::from);
+
         Mono<String> summary = outputs.takeLast(2).elementAt(0);
         Mono<String> consoleLog = outputs.takeLast(2).elementAt(1);
 
-        cacheResult(result);
+        cacheResult(results);
 
-        return result.doOnNext(log::info)
+        return results
+                .map(this::buildOutput)
+                .doOnNext(result -> log.info("Still running"))
                 .concatWith(saveHistory(runConfig, runInfo, summary, consoleLog)
                         .cast(String.class));
     }
 
-    private void cacheResult(Flux<String> result) {
+    private void cacheResult(Flux<RuntimeStat> result) {
         result.take(1)  // Avoid caching failed run results */
                 .doOnNext(v -> resultRepository.update(result))
                 .subscribe();
@@ -81,7 +86,8 @@ public class RunnerService {
     }
 
     public Flux<String> replay() {
-        return resultRepository.replay();
+        return resultRepository.replay()
+                .map(this::buildOutput);
     }
 
     public Mono<Boolean> stop() {
@@ -93,5 +99,15 @@ public class RunnerService {
         return Mono.fromRunnable(resultRepository::initialize)
                 .then(stop())
                 .doOnSuccess(v -> log.info("Reset complete."));
+    }
+
+    private String buildOutput(RuntimeStat runtimeStat) {
+        float time = runtimeStat.getSeconds();
+
+        long finishedIterationCount = runtimeStat.getStat().getFinishedIterationCount();
+        long currentVUCount = runtimeStat.getStat().getCurrentVUCount();
+        long currentMaxVUCount = runtimeStat.getStat().getCurrentMaxVUCount();
+
+        return String.format("[%.1fs] iter: %d, VUs: %d/%d\n", time, finishedIterationCount, currentVUCount, currentMaxVUCount);
     }
 }

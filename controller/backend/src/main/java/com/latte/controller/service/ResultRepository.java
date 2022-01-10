@@ -1,26 +1,22 @@
 package com.latte.controller.service;
 
+import com.latte.controller.dto.RuntimeStat;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
-import javax.annotation.PostConstruct;
-
 @Repository
 public class ResultRepository {
-    private static final Flux<String> INITIAL_RESULT = Flux.just("No previous result exists");
+    private volatile Flux<RuntimeStat> result = Flux.empty();
 
-    private volatile Flux<String> result;
-
-    @PostConstruct
     public void initialize() {
-        this.result = INITIAL_RESULT;
+        this.result = Flux.empty();
     }
 
-    public void update(Flux<String> result) {
+    public void update(Flux<RuntimeStat> result) {
         this.result = result;
     }
 
-    public Flux<String> replay() {
+    public Flux<RuntimeStat> replay() {
         return this.result;
     }
 }
