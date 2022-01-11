@@ -6,6 +6,8 @@ import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
 import EventSource from 'eventsource';
 import { CssBaseline, Button, Autocomplete } from '@mui/material';
+import RunChart from './run_chart';
+import _ from "lodash";
 
 export default function Run() {
     const name = React.useRef();
@@ -13,27 +15,34 @@ export default function Run() {
     const [script, setScript] = React.useState("");
     const tps = React.useRef(50);
     const duration = React.useRef();
-    const [output, setOutput] = React.useState("");
+    const [stats, setStats] = React.useState([]);
+    const [chartStats, setChartStats] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [branches, setBranches] = React.useState([]);
     const [scripts, setScripts] = React.useState([]);
-    const bottomRef = React.useRef();
 
-    const OUTPUT_BUFFER_SIZE = 1024 * 64;
+    const updateStats = (stat) => {
+        let metrics = _.get(stat, 'stat.data', []);
+        let iters = _.find(metrics, (metric) => metric.id === "iterations")
+            ?.attributes
+            ?.sample
+            ?.count
+            ?? 0;
 
-    const updateOutput = (line) => {
-        setOutput(output => {
-            const newOutput = output + line;
-            if (newOutput.length > OUTPUT_BUFFER_SIZE) {
-                return newOutput.substr(newOutput.length - OUTPUT_BUFFER_SIZE);
+        setStats(prevStats => [...prevStats, stat]);
+        setChartStats(prevChartStats => {
+            let chartStat = {};
+
+            chartStat.duration = stat.time;
+            chartStat.totalIters = iters;
+            if (prevChartStats === undefined || prevChartStats.length == 0) {
+                chartStat.tps = iters;
             } else {
-                return newOutput;
+                chartStat.tps = iters - prevChartStats[prevChartStats.length - 1].totalIters;
             }
-        });
-    }
-    
-    const scrollToBottom = () => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+
+            return [...prevChartStats, chartStat];
+        })
     }
 
     const requestReset = () => {
@@ -56,7 +65,8 @@ export default function Run() {
     }
 
     const requestRun = () => {
-        setOutput("");
+        setStats([]);
+        setChartStats([]);
         setLoading(true);
         let url = "/api/run"
         url += "?testName=" + name.current.value;
@@ -72,8 +82,7 @@ export default function Run() {
 
         let running = false;
         eventSource.onmessage = e => {
-            updateOutput(e.data);
-            scrollToBottom();
+            updateStats(JSON.parse(e.data));
             running = true;
         };
 
@@ -91,15 +100,15 @@ export default function Run() {
     }
 
     const requestReplay = () => {
-        setOutput("");
+        setStats([]);
+        setChartStats([]);
         setLoading(true);
         let url = "/api/run/replay"
         let eventSource = new EventSource(url)
 
         let running = false;
         eventSource.onmessage = e => {
-            setOutput(output => output + e.data);
-            scrollToBottom();
+            updateStats(JSON.parse(e.data));
             running = true;
         };
 
@@ -182,11 +191,9 @@ export default function Run() {
                         </Grid>
                     </Grid>
                 </Box>
-                <Box height="70%" paddingLeft="20" paddingBottom="10" style={{ backgroundColor: "#282c34", color: "#D4D4D4", fontFamily: "Courier", whiteSpace: "pre", overflowY: "scroll" }}>
-                    {output}
-                    <div ref={bottomRef} />
+                <Box height="40%">
+                    <RunChart data={chartStats} />
                 </Box>
-                <Box sx={{ height: 10 }} />
                 <Box>
                     <Grid container justifyContent="flex-end">
                         <Button onClick={requestReset} variant="outlined" color="error">Reset</Button>
