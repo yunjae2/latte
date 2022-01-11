@@ -25,15 +25,13 @@ public class RunnerService {
     private final ResultRepository resultRepository;
     private volatile AtomicBoolean stop = new AtomicBoolean(false);
 
-    private static final int REPLAY_SIZE = 180;
-
-    public Flux<String> run(RunnerRequest runnerRequest) {
+    public Flux<RuntimeStat> run(RunnerRequest runnerRequest) {
         RunInfo runInfo = buildRunInfo(runnerRequest);
         RunConfig runConfig = buildConfig(runnerRequest);
 
         Flux<String> outputs = workerClient.run(runConfig)
                 .takeUntil(output -> stop.getAndSet(false))
-                .replay(REPLAY_SIZE)
+                .replay()
                 .autoConnect();
 
         Flux<RuntimeStat> results = outputs.skipLast(2)
@@ -45,10 +43,9 @@ public class RunnerService {
         cacheResult(results);
 
         return results
-                .map(this::buildOutput)
                 .doOnNext(result -> log.info("Still running"))
                 .concatWith(saveHistory(runConfig, runInfo, summary, consoleLog)
-                        .cast(String.class));
+                        .cast(RuntimeStat.class));
     }
 
     private void cacheResult(Flux<RuntimeStat> result) {
@@ -85,9 +82,8 @@ public class RunnerService {
                 .flatMap(tuple -> historyService.save(runConfig, runInfo, tuple.getT1(), tuple.getT2()));
     }
 
-    public Flux<String> replay() {
-        return resultRepository.replay()
-                .map(this::buildOutput);
+    public Flux<RuntimeStat> replay() {
+        return resultRepository.replay();
     }
 
     public Mono<Boolean> stop() {
@@ -99,15 +95,5 @@ public class RunnerService {
         return Mono.fromRunnable(resultRepository::initialize)
                 .then(stop())
                 .doOnSuccess(v -> log.info("Reset complete."));
-    }
-
-    private String buildOutput(RuntimeStat runtimeStat) {
-        float time = runtimeStat.getSeconds();
-
-        long finishedIterationCount = runtimeStat.getStat().getFinishedIterationCount();
-        long currentVUCount = runtimeStat.getStat().getCurrentVUCount();
-        long currentMaxVUCount = runtimeStat.getStat().getCurrentMaxVUCount();
-
-        return String.format("[%.1fs] iter: %d, VUs: %d/%d\n", time, finishedIterationCount, currentVUCount, currentMaxVUCount);
     }
 }

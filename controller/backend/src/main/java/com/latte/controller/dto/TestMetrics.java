@@ -13,6 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Builder
 @Jacksonized
+@Getter
 public class TestMetrics {
     private final List<Metric> data;
 

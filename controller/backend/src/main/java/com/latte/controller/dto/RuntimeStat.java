@@ -39,10 +39,4 @@ public class RuntimeStat {
         }
         return true;
     }
-
-    public float getSeconds() {
-        long seconds = this.time.toSeconds();
-        int milliSeconds = this.time.toMillisPart();
-        return seconds + (float) milliSeconds / 1000;
-    }
 }
