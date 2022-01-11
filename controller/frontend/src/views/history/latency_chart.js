@@ -73,11 +73,10 @@ export default function LatencyChart(props) {
     return (
         <React.Fragment>
             <Box sx={{ margin: 1 }}>
-                <ResponsiveContainer width="80%" height={300}>
+                <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={convertToChartData(rows)} margin={{ top: 5, right: 20, bottom: 5, left: 15 }}>
                         <Tooltip />
                         <XAxis dataKey="percentile">
-                            <Label value="Percentile" position="insideBottom" offset={0} />
                         </XAxis>
                         <YAxis tick={{ dx: -10 }} domain={calcDomain()} >
                             <Label dx={-10} value="Latency (ms)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
