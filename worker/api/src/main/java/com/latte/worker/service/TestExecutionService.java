@@ -44,7 +44,8 @@ public class TestExecutionService {
 
     private Mono<String> getRuntimeStats(Long seq) {
         return k6RestClient.listMetrics()
-                .map(metricBody -> "{\n\"time\": " + "" + seq + ".0,\n" + "\"stat\": " + metricBody + "\n}");
+                .map(metricBody -> "{\n\"time\": " + "" + seq + ".0,\n" + "\"stat\": " + metricBody + "\n}")
+                .onErrorResume(throwable -> Mono.empty());
     }
 
     public Mono<Void> applyParameters(TestParameters testParameters) {
