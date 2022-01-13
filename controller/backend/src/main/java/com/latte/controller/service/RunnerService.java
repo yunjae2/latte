@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -35,13 +37,16 @@ public class RunnerService {
                 .replay(REPLAY_SIZE)
                 .autoConnect();
 
-        Flux<String> result = outputs.skipLast(1);
+        Flux<String> result = outputs.skipLast(1)
+                .buffer(Duration.ofSeconds(1))
+                .map(this::joinOutputs);
+
         Mono<String> summary = outputs.last();
 
         cacheResult(result);
 
         return result.doOnNext(log::info)
-                .concatWith(saveSummary(runConfig, runInfo, summary)
+                .concatWith(saveSummary(runConfig, runInfo, summary, result)
                         .cast(String.class));
     }
 
@@ -73,10 +78,10 @@ public class RunnerService {
                 .build();
     }
 
-    private Mono<Void> saveSummary(RunConfig runConfig, RunInfo runInfo, Mono<String> summary) {
-        return summary
-                .filter(s -> s.startsWith("{") && s.endsWith("}"))
-                .flatMap(s -> historyService.save(runConfig, runInfo, s));
+    private Mono<Void> saveSummary(RunConfig runConfig, RunInfo runInfo, Mono<String> summary, Flux<String> outputs) {
+        return Mono.zip(summary, outputs.collectList().map(this::joinOutputs))
+                .filter(tuple -> tuple.getT1().startsWith("{") && tuple.getT1().endsWith("}"))
+                .flatMap(tuple -> historyService.save(runConfig, runInfo, tuple.getT1(), tuple.getT2()));
     }
 
     public Flux<String> replay() {
@@ -92,5 +97,9 @@ public class RunnerService {
         return Mono.fromRunnable(resultRepository::initialize)
                 .then(stop())
                 .doOnSuccess(v -> log.info("Reset complete."));
+    }
+
+    private String joinOutputs(List<String> outputs) {
+        return String.join("", outputs);
     }
 }

@@ -9,10 +9,13 @@ import com.latte.controller.domain.TestHistory.TestHistoryBuilder;
 import com.latte.controller.dto.RunConfig;
 import com.latte.controller.dto.RunInfo;
 import com.latte.controller.repository.HistoryRepository;
+import com.latte.controller.repository.LogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,21 +25,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HistoryService {
     private final HistoryRepository historyRepository;
+    private final LogRepository logRepository;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public Mono<List<TestHistory>> getAll() {
-        return Mono.just(historyRepository.findAll());
+        return Mono.fromCallable(() -> historyRepository.findAll())
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
-    public Mono<Void> save(RunConfig runConfig, RunInfo runInfo, String summary) {
-        TestHistory testHistory = buildTestHistory(runConfig, runInfo, summary);
-        return Mono.fromRunnable(() -> {
-            historyRepository.save(testHistory);
-            log.info("Run history saved successfully");
-        });
+    public Mono<Void> save(RunConfig runConfig, RunInfo runInfo, String summary, String consoleLog) {
+        return Mono.fromCallable(() -> logRepository.save(consoleLog))
+                .map(logPath -> buildTestHistory(runConfig, runInfo, summary, logPath))
+                .map(historyRepository::save)
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnSuccess(v -> log.info("Run history saved successfully"))
+                .then();
     }
 
-    private TestHistory buildTestHistory(RunConfig runConfig, RunInfo runInfo, String summary) {
+    private TestHistory buildTestHistory(RunConfig runConfig, RunInfo runInfo, String summary, String logPath) {
         return fillSummaryData(TestHistory.builder(), summary)
                 .name(runInfo.getTestName())
                 .date(runInfo.getStartTime())
@@ -45,16 +51,19 @@ public class HistoryService {
                 .isSuccessful(true)     // TODO
                 .requestedTps(runConfig.getTps())
                 .result(summary)
+                .logPath(logPath)
                 .build();
     }
 
     public Mono<Boolean> delete(Long id) {
         return Mono.fromRunnable(() -> historyRepository.deleteById(id))
+                .subscribeOn(Schedulers.boundedElastic())
                 .thenReturn(true);
     }
 
     public Mono<TestHistory> get(Long id) {
         return Mono.fromCallable(() -> historyRepository.findById(id))
+                .subscribeOn(Schedulers.boundedElastic())
                 .map(testHistory -> testHistory.orElseThrow(() -> new IllegalStateException("Failed to get the test history of id " + id)));
     }
 
@@ -95,5 +104,12 @@ public class HistoryService {
             log.error("Failed to parse summary results", e);
             throw new IllegalStateException(e);
         }
+    }
+
+    public Mono<Resource> getLog(Long id) {
+        return this.get(id)
+                .map(TestHistory::getLogPath)
+                .map(logRepository::getLog)
+                .subscribeOn(Schedulers.boundedElastic());
     }
 }

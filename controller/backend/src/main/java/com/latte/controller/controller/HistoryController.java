@@ -9,7 +9,15 @@ import com.latte.controller.domain.TestHistory;
 import com.latte.controller.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.util.stream.Collectors;
@@ -34,6 +42,13 @@ public class HistoryController {
                 .map(HistoryDetailResponse::from)
                 .doOnSuccess(response -> log.info("Single history fetched; id: {}", id))
                 .doOnError(error -> log.error("Failed to get test detail of id {}", id, error));
+    }
+
+    @GetMapping(value = "/{id}/log", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public Mono<? extends Resource> downloadLog(@PathVariable Long id) {
+        return historyService.getLog(id)
+                .doOnSuccess(response -> log.info("Console log downloaded; id: {}", id))
+                .doOnError(error -> log.error("Failed to download the console log of id {}", id, error));
     }
 
     @GetMapping("/all")
