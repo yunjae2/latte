@@ -19,7 +19,7 @@ export default function Run() {
     const [scripts, setScripts] = React.useState([]);
     const bottomRef = React.useRef();
 
-    const OUTPUT_BUFFER_SIZE = 1024 * 64;
+    const OUTPUT_BUFFER_SIZE = 4 * 1024 * 1024;
 
     const updateOutput = (line) => {
         setOutput(output => {
@@ -98,7 +98,7 @@ export default function Run() {
 
         let running = false;
         eventSource.onmessage = e => {
-            setOutput(output => output + e.data);
+            updateOutput(e.data);
             scrollToBottom();
             running = true;
         };
