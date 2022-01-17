@@ -1,0 +1,7 @@
+version: '3.7'
+services:
+  worker:
+    build:
+      context: ../worker/api
+      dockerfile: ../../docker/worker/Dockerfile
+    image: yunjae2/latte-worker:0.1.1
