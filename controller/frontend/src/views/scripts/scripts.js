@@ -53,7 +53,7 @@ export default function Scripts() {
     const [openFileContent, setOpenFileContent] = useState(null);
 
     const getRepositoryUrl = () => {
-        return "http://" + window.location.hostname + ":8082/repository";
+        return "http://" + window.location.hostname + ":8082/latte_repo";
     }
 
     const handleCreateFolder = (key) => {
