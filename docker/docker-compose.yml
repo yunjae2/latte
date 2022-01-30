@@ -5,16 +5,26 @@ services:
       context: ../controller/backend
       dockerfile: ../../docker/controller/backend/Dockerfile
     image: yunjae2/latte-controller-api:0.1.1
+    volumes:
+      - type: volume
+        source: gitdata
+        target: /var/www/git
     ports:
       - "8080:8080"
     profiles:
       - "controller"
+    depends_on:
+      - controller-git
 
   controller-git:
     build:
       context: ../controller/git-server
       dockerfile: ../../docker/controller/git-server/Dockerfile
     image: yunjae2/latte-controller-git:0.1.1
+    volumes:
+      - type: volume
+        source: gitdata
+        target: /var/www/git
     ports:
       - "8082:80"
     profiles:
@@ -29,3 +39,6 @@ services:
       - "8081:8081"
     profiles:
       - "worker"
+
+volumes:
+  gitdata:
