@@ -1,6 +1,6 @@
 package com.latte.controller.client;
 
-import com.latte.controller.config.ControllerConfig;
+import com.latte.controller.property.ControllerProperties;
 import com.latte.controller.config.IndentableServerSentEventHttpMessageReader;
 import com.latte.controller.dto.RunConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import reactor.core.publisher.Flux;
 public class WorkerClient {
     private final WebClient webClient;
 
-    public WorkerClient(ControllerConfig controllerConfig) {
+    public WorkerClient(ControllerProperties controllerConfig) {
         webClient = WebClient.builder()
                 .baseUrl(controllerConfig.getSettings().getWorkerUrl())
                 .codecs(clientCodecConfigurer -> {

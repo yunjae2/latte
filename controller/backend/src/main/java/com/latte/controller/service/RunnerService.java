@@ -1,7 +1,7 @@
 package com.latte.controller.service;
 
 import com.latte.controller.client.WorkerClient;
-import com.latte.controller.config.ControllerConfig;
+import com.latte.controller.property.ControllerProperties;
 import com.latte.controller.controller.request.RunnerRequest;
 import com.latte.controller.dto.RunConfig;
 import com.latte.controller.dto.RunInfo;
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 public class RunnerService {
     private final WorkerClient workerClient;
-    private final ControllerConfig controllerConfig;
+    private final ControllerProperties controllerProperties;
     private final HistoryService historyService;
     private final ResultRepository resultRepository;
     private volatile AtomicBoolean stop = new AtomicBoolean(false);
@@ -67,8 +67,8 @@ public class RunnerService {
     private RunConfig buildConfig(RunnerRequest runnerRequest) {
         return RunConfig.builder()
                 .repositoryUrl(runnerRequest.getRepositoryUrl())
-                .username(controllerConfig.getSettings().getUsername())
-                .password(controllerConfig.getSettings().getPassword())
+                .username(controllerProperties.getSettings().getUsername())
+                .password(controllerProperties.getSettings().getPassword())
                 .branchName(runnerRequest.getBranchName())
                 .scriptFilePath(runnerRequest.getScriptFilePath())
                 .duration(runnerRequest.getDuration())

@@ -1,5 +1,7 @@
 package com.latte.controller.repository;
 
+import com.latte.controller.property.LogProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -9,16 +11,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class LogRepository {
-    private static final Path LOG_ROOT_DIR = Paths.get(System.getProperty("user.home"), ".latte", "log");
+    private final LogProperties logProperties;
 
     public Resource getLog(String logPath) {
-        return new FileSystemResource(LOG_ROOT_DIR.resolve(logPath));
+        return new FileSystemResource(logProperties.getPath().resolve(logPath));
     }
 
     public String save(String consoleLog) {
@@ -28,7 +30,7 @@ public class LogRepository {
 
         while (true) {
             String logFileName = "latte-" + UUID.randomUUID() + ".log";
-            logPath = LOG_ROOT_DIR.resolve(logFileName);
+            logPath = logProperties.getPath().resolve(logFileName);
             try {
                 if (logPath.toFile().createNewFile()) {
                     break;
@@ -50,9 +52,9 @@ public class LogRepository {
     }
 
     private void prepareLogDirectory() {
-        if (LOG_ROOT_DIR.toFile().exists())
+        if (logProperties.getPath().toFile().exists())
             return;
 
-        LOG_ROOT_DIR.toFile().mkdirs();
+        logProperties.getPath().toFile().mkdirs();
     }
 }

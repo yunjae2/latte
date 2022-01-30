@@ -1,4 +1,4 @@
-package com.latte.controller.config;
+package com.latte.controller.property;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @JsonRootName("controller")
-@JsonSerialize(as = ControllerConfig.class)     // To mitigate infinite recursive due to @RefreshScope's proxy
+@JsonSerialize(as = ControllerProperties.class)     // To mitigate infinite recursive due to @RefreshScope's proxy
 @ConfigurationProperties(prefix = "controller")
 @RefreshScope
 @Component
-public class ControllerConfig {
+public class ControllerProperties {
     private Boolean registered;
     private Settings settings;
 
@@ -29,6 +29,7 @@ public class ControllerConfig {
     public static class Settings {
         private String workerUrl;
         private String username;
+        /* TODO: Use hashed value */
         private String password;
 
         public Settings toPublicSettings() {

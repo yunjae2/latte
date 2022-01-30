@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    active: prod
+
   datasource:
     url: jdbc:h2:~/.latte/records;AUTO_SERVER=TRUE
     driver-class-name: org.h2.Driver
@@ -22,3 +25,19 @@ management:
     web:
       exposure:
         include: refresh
+
+---
+spring.config.activate.on-profile: dev
+
+latte:
+  home.path: ${user.home}/.latte
+  scripts.path: ${user.home}/.latte/latte_repo
+  logs.path: ${user.home}/.latte/log
+
+---
+spring.config.activate.on-profile: prod
+
+latte:
+  home.path: ${user.home}/.latte
+  scripts.path: /var/www/git/latte_repo
+  logs.path: ${user.home}/.latte/log

@@ -1,5 +1,6 @@
 package com.latte.controller.repository;
 
+import com.latte.controller.property.ScriptProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
@@ -10,8 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,11 +18,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Repository
 public class ScriptRepository {
-    private static final Path SCRIPT_ROOT = Paths.get("/var/www/git/repository");
+    private final ScriptProperties scriptProperties;
 
     public ScriptRepository write(String fileName, String content) {
         try {
-            Files.write(SCRIPT_ROOT.resolve(fileName), content.getBytes(StandardCharsets.UTF_8));
+            Files.write(scriptProperties.getPath().resolve(fileName), content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             log.error("Failed to write content to file {}", fileName);
             throw new IllegalStateException(e);
@@ -34,7 +33,7 @@ public class ScriptRepository {
 
     public ScriptRepository add(String fileName) {
         try {
-            Git.open(SCRIPT_ROOT.toFile())
+            Git.open(scriptProperties.getPath().toFile())
                     .add()
                     .addFilepattern(fileName)
                     .call();
@@ -51,7 +50,7 @@ public class ScriptRepository {
 
     public ScriptRepository commit(String message) {
         try {
-            Git.open(SCRIPT_ROOT.toFile())
+            Git.open(scriptProperties.getPath().toFile())
                     .commit()
                     .setMessage(message)
                     .call();
@@ -69,7 +68,7 @@ public class ScriptRepository {
     public List<String> getBranches() {
         List<Ref> refs;
         try {
-            refs = Git.open(SCRIPT_ROOT.toFile())
+            refs = Git.open(scriptProperties.getPath().toFile())
                     .branchList()
                     .call();
         } catch (GitAPIException e) {

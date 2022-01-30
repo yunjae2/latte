@@ -2,7 +2,7 @@ package com.latte.controller.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.latte.controller.config.ControllerConfig;
+import com.latte.controller.property.ControllerProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.endpoint.RefreshEndpoint;
@@ -26,12 +26,12 @@ public class ConfigRepository {
 
     private final RefreshEndpoint refreshEndpoint;
 
-    public void applyConfig(ControllerConfig controllerConfig) {
+    public void applyConfig(ControllerProperties controllerConfig) {
         writeConfig(controllerConfig);
         refreshConfig();
     }
 
-    private void writeConfig(ControllerConfig controllerConfig) {
+    private void writeConfig(ControllerProperties controllerConfig) {
         try {
             mapper.writeValue(SETTINGS_PATH.toFile(), controllerConfig);
         } catch (IOException e) {

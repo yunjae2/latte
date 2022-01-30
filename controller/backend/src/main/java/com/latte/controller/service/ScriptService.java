@@ -1,6 +1,7 @@
 package com.latte.controller.service;
 
 import com.latte.controller.dto.FileInfo;
+import com.latte.controller.property.ScriptProperties;
 import com.latte.controller.repository.ScriptRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +11,6 @@ import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,8 +18,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class ScriptService {
-    private static final Path SCRIPT_ROOT = Paths.get("/var/www/git/repository");
     private final ScriptRepository scriptRepository;
+    private final ScriptProperties scriptProperties;
 
     public Mono<List<FileInfo>> findAll() {
         return Mono.fromCallable(() -> findAllInternal())
@@ -29,10 +28,10 @@ public class ScriptService {
 
     private List<FileInfo> findAllInternal() {
         try {
-            return Files.walk(SCRIPT_ROOT)
+            return Files.walk(scriptProperties.getPath())
                     .filter(Files::isRegularFile)
-                    .filter(path -> !SCRIPT_ROOT.relativize(path).startsWith(".git"))
-                    .map(path -> FileInfo.fromPath(SCRIPT_ROOT, path))
+                    .filter(path -> !scriptProperties.getPath().relativize(path).startsWith(".git"))
+                    .map(path -> FileInfo.fromPath(scriptProperties.getPath(), path))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             log.error("Failed during building file tree", e);
@@ -47,7 +46,7 @@ public class ScriptService {
 
     private String getStringInternal(String fileName) {
         try {
-            return Files.readString(SCRIPT_ROOT.resolve(fileName));
+            return Files.readString(scriptProperties.getPath().resolve(fileName));
         } catch (IOException e) {
             log.error("Failed to read file {}", fileName, e);
             throw new IllegalStateException(e);

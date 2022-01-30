@@ -1,6 +1,6 @@
 package com.latte.controller.controller.response;
 
-import com.latte.controller.config.ControllerConfig.Settings;
+import com.latte.controller.property.ControllerProperties.Settings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
