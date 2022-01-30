@@ -5,6 +5,7 @@ services:
       context: ../controller/frontend
       dockerfile: ../../docker/controller/frontend/Dockerfile
     image: yunjae2/latte-controller-gui:0.1.1
+    container_name: latte-controller-gui
     environment:
       - PORT=80
       - BACKEND_URI=http://controller-backend:8080
@@ -20,6 +21,7 @@ services:
       context: ../controller/backend
       dockerfile: ../../docker/controller/backend/Dockerfile
     image: yunjae2/latte-controller-api:0.1.1
+    container_name: latte-controller-api
     volumes:
       - type: volume
         source: gitdata
@@ -36,6 +38,7 @@ services:
       context: ../controller/git-server
       dockerfile: ../../docker/controller/git-server/Dockerfile
     image: yunjae2/latte-controller-git:0.1.1
+    container_name: latte-controller-git
     volumes:
       - type: volume
         source: gitdata
