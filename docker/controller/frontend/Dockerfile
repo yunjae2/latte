@@ -9,8 +9,6 @@ COPY ./package.json ${FRONTEND_DIR}
 
 WORKDIR ${FRONTEND_DIR}
 
-# RUN setcap cap_net_bind_service=+ep $(which node)
-
 # Install frontend
 RUN npm install
 
