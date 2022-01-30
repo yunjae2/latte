@@ -23,7 +23,6 @@ RUN gradle build --no-daemon
 # Run the artifact
 FROM openjdk:11-jdk
 
-ENV GIT_AUTH_DIR=/etc/git
 ENV GIT_SOURCE_DIR=/var/www/git
 
 ENV LATTE_DIR=/root/.latte
@@ -44,7 +43,6 @@ COPY ./scripts/register_user.sh ${LATTE_DIR}
 
 ## Finally run the artifact
 VOLUME ${LATTE_DIR}
-VOLUME ${GIT_AUTH_DIR}
 VOLUME ${GIT_SOURCE_DIR}
 EXPOSE 8080
 
