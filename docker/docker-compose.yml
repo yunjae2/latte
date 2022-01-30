@@ -1,5 +1,20 @@
 version: '3.7'
 services:
+  controller-frontend:
+    build:
+      context: ../controller/frontend
+      dockerfile: ../../docker/controller/frontend/Dockerfile
+    image: yunjae2/latte-controller-gui:0.1.1
+    environment:
+      - PORT=80
+      - BACKEND_URI=http://controller-backend:8080
+    ports:
+      - "3001:80"
+    profiles:
+      - "controller"
+    depends_on:
+      - controller-backend
+
   controller-backend:
     build:
       context: ../controller/backend
