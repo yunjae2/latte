@@ -12,8 +12,10 @@ import java.nio.file.Paths;
 @Getter
 public class ScriptProperties {
     private final Path path;
+    private final Path authFile;
 
-    public ScriptProperties(String path) {
+    public ScriptProperties(String path, String authFile) {
         this.path = Paths.get(path);
+        this.authFile = Paths.get(authFile);
     }
 }

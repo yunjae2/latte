@@ -2,5 +2,6 @@
 
 USERNAME=$1
 PASSWORD=$2
+AUTH_FILE=$3
 
-sudo htpasswd -cmb /var/www/git/.htpasswd "$USERNAME" "$PASSWORD"
+htpasswd -mb "$AUTH_FILE" "$USERNAME" "$PASSWORD"

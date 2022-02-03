@@ -1,5 +1,6 @@
 package com.latte.controller.service;
 
+import com.latte.controller.property.ScriptProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.nio.file.Paths;
 @Service
 public class UserService {
     private static final Path LATTE_HOME = Paths.get(System.getProperty("user.home"), ".latte");
+    private final ScriptProperties scriptProperties;
 
     public Mono<Void> register(String username, String password) {
         return Mono.fromRunnable(() -> registerInternal(username, password))
@@ -25,7 +27,7 @@ public class UserService {
 
     private void registerInternal(String username, String password) {
         try {
-            run(LATTE_HOME.toFile(), "./register_user.sh", username, password)
+            run(LATTE_HOME.toFile(), "./register_user.sh", username, password, scriptProperties.getAuthFile().toAbsolutePath().toString())
                     .waitFor();
         } catch (InterruptedException e) {
             log.error("Failed to register user {}", username, e);

@@ -31,7 +31,9 @@ spring.config.activate.on-profile: dev
 
 latte:
   home.path: ${user.home}/.latte
-  scripts.path: ${user.home}/.latte/latte_repo
+  scripts:
+    path: git-data/latte_repo
+    auth-file: git-data/.htpasswd
   logs.path: ${user.home}/.latte/log
 
 ---
@@ -39,5 +41,7 @@ spring.config.activate.on-profile: prod
 
 latte:
   home.path: ${user.home}/.latte
-  scripts.path: /var/www/git/latte_repo
+  scripts:
+    path: /var/www/git/latte_repo
+    auth-file: /var/www/git/.htpasswd
   logs.path: ${user.home}/.latte/log
