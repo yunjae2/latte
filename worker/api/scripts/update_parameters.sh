@@ -5,7 +5,7 @@ DURATION=$2
 VUS=$3
 MAX_VUS=$4
 
-CONFIG_FILE="scripts/TestHelper.js"
+CONFIG_FILE="TestHelper.js"
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   EXT_ARG=""
