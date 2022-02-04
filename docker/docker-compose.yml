@@ -44,6 +44,7 @@ services:
 
   worker:
     image: yunjae2/latte-worker:0.1.1
+    container_name: latte-worker
     ports:
       - "8081:8081"
     profiles:
