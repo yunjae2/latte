@@ -3,7 +3,7 @@ services:
   controller-frontend:
     build:
       context: ../controller/frontend
-      dockerfile: docker/controller/frontend/Dockerfile
+      dockerfile: ../../docker/controller/frontend/Dockerfile
     image: yunjae2/latte-controller-gui:0.1.1
     container_name: latte-controller-gui
     environment:
@@ -19,7 +19,7 @@ services:
   controller-backend:
     build:
       context: ../controller/backend
-      dockerfile: docker/controller/backend/Dockerfile
+      dockerfile: ../../docker/controller/backend/Dockerfile
     image: yunjae2/latte-controller-api:0.1.1
     container_name: latte-controller-api
     volumes:
@@ -36,7 +36,7 @@ services:
   controller-git:
     build:
       context: ../controller/git-server
-      dockerfile: docker/controller/git-server/Dockerfile
+      dockerfile: ../../docker/controller/git-server/Dockerfile
     image: yunjae2/latte-controller-git:0.1.1
     container_name: latte-controller-git
     volumes:
@@ -51,7 +51,7 @@ services:
   worker:
     build:
       context: ../worker/api
-      dockerfile: docker/worker/Dockerfile
+      dockerfile: ../../docker/worker/Dockerfile
     image: yunjae2/latte-worker:0.1.1
     ports:
       - "8081:8081"
