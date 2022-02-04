@@ -4,4 +4,4 @@ USERNAME=$1
 PASSWORD=$2
 AUTH_FILE=$3
 
-htpasswd -mb "$AUTH_FILE" "$USERNAME" "$PASSWORD"
+htpasswd -cmb "$AUTH_FILE" "$USERNAME" "$PASSWORD"
