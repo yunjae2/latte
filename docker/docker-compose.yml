@@ -20,6 +20,9 @@ services:
       - type: volume
         source: gitdata
         target: /var/www/git
+      - type: volume
+        source: rundata
+        target: /root/.latte
     ports:
       - "8080:8080"
     profiles:
@@ -48,3 +51,6 @@ services:
 
 volumes:
   gitdata:
+    name: latte-gitdata
+  rundata:
+    name: latte-rundata
