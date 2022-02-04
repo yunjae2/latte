@@ -60,7 +60,7 @@ export default function Run() {
         setLoading(true);
         let url = "/api/run"
         url += "?testName=" + name.current.value;
-        url += "&repositoryUrl=" + "http://" + window.location.hostname + ":8082/repository";
+        url += "&repositoryUrl=" + "http://" + window.location.hostname + ":8082/latte_repo";
         url += "&branchName=" + branch;
         url += "&scriptFilePath=" + script;
         url += "&tps=" + tps.current.value;
