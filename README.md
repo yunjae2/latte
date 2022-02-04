@@ -8,34 +8,18 @@ It is based on [k6](https://github.com/grafana/k6).
 
 
 ## Installation
-Currently only RHEL-based OSes (including Amazon Linux) are supported.
+Download `docker-compose.yml` in the releases tab.
 ### Worker
 ```
-$ git clone https://github.com/yunjae2/latte
-$ cd latte/worker/api/run/
-$ ./install.sh
-$ ./run.sh
+$ docker-compose --profile worker up
 ```
 
 
 ### Controller
-1. API server
 ```
-$ git clone https://github.com/yunjae2/latte
-$ cd latte/controller/backend/run/
-$ ./install.sh
-$ ./install_git.sh
-$ ./run.sh
+$ docker-compose --profile controller up
 ```
-
-2. GUI server
-```
-$ git clone https://github.com/yunjae2/latte
-$ cd latte/controller/frontend/run/
-$ ./install.sh 
-$ ./run.sh
-```
-When the server is up, register the worker URL (`http://<worker ip addr>:8081`) and user info.
+When the server is up, register the worker URL (`http://<worker addr>:8081`) and user info.
 
 
 ## Usage
