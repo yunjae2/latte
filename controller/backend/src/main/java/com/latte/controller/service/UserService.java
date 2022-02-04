@@ -27,7 +27,7 @@ public class UserService {
 
     private void registerInternal(String username, String password) {
         try {
-            run(LATTE_HOME.toFile(), "./register_user.sh", username, password, scriptProperties.getAuthFile().toAbsolutePath().toString())
+            run(LATTE_HOME.toFile(), "htpasswd", "-cmb", scriptProperties.getAuthFile().toAbsolutePath().toString(), username, password)
                     .waitFor();
         } catch (InterruptedException e) {
             log.error("Failed to register user {}", username, e);

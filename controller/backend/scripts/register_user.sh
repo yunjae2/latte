@@ -1,7 +1,0 @@
-#!/bin/bash
-
-USERNAME=$1
-PASSWORD=$2
-AUTH_FILE=$3
-
-htpasswd -cmb "$AUTH_FILE" "$USERNAME" "$PASSWORD"

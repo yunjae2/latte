@@ -39,7 +39,6 @@ COPY ./scripts/controller.yml ${LATTE_DIR}
 ## Install htpasswd required for git auth configuration
 RUN apt-get update
 RUN apt-get install apache2-utils
-COPY ./scripts/register_user.sh ${LATTE_DIR}
 
 ## Finally run the artifact
 VOLUME ${LATTE_DIR}
