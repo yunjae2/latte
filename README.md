@@ -8,7 +8,7 @@ It is based on [k6](https://github.com/grafana/k6).
 
 
 ## Installation
-Download `docker-compose.yml` in the releases tab.
+Download `docker-compose.yml` in the releases tab. The `docker-compose` version should be `>= 1.28`.
 ### Worker
 ```
 $ docker-compose --profile worker up
