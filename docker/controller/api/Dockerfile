@@ -1,6 +1,6 @@
 ARG BUILD_DIR=/home/gradle/src
 
-# Build the backend artifact
+# Build the artifact
 FROM gradle:7.2-jdk11-alpine AS build
 ARG BUILD_DIR
 ENV GRADLE_HOME=${BUILD_DIR}

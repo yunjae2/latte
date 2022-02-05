@@ -1,14 +1,14 @@
 version: '3.7'
 services:
-  controller-frontend:
+  controller-gui:
     build:
-      context: ../controller/frontend
-      dockerfile: ../../docker/controller/frontend/Dockerfile
+      context: ../controller/gui
+      dockerfile: controller/gui/Dockerfile
 
-  controller-backend:
+  controller-api:
     build:
-      context: ../controller/backend
-      dockerfile: ../../docker/controller/backend/Dockerfile
+      context: ../controller/api
+      dockerfile: ../../docker/controller/api/Dockerfile
 
   controller-git:
     build:
