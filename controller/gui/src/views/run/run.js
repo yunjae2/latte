@@ -4,8 +4,11 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
-import EventSource from 'eventsource';
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import { CssBaseline, Button, Autocomplete } from '@mui/material';
+
+const EventSource = NativeEventSource || EventSourcePolyfill;
+global.EventSource = NativeEventSource || EventSourcePolyfill;
 
 export default function Run() {
     const name = React.useRef();

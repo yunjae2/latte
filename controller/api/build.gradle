@@ -4,8 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.latte.backend'
-version = '0.0.1-SNAPSHOT'
+group = 'com.latte.controller'
 sourceCompatibility = '11'
 
 configurations {
