@@ -3,7 +3,7 @@ services:
   controller-gui:
     build:
       context: ../controller/gui
-      dockerfile: controller/gui/Dockerfile
+      dockerfile: ../../docker/controller/gui/Dockerfile
     ports:
       - "3000:80"
 
