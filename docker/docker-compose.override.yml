@@ -4,16 +4,29 @@ services:
     build:
       context: ../controller/gui
       dockerfile: controller/gui/Dockerfile
+    ports:
+      - "3000:80"
 
   controller-api:
     build:
       context: ../controller/api
       dockerfile: ../../docker/controller/api/Dockerfile
+    volumes:
+      - type: bind
+        source: ../git-data
+        target: /var/www/git
+      - type: volume
+        source: rundata
+        target: /root/.latte
 
   controller-git:
     build:
       context: ../controller/git-server
       dockerfile: ../../docker/controller/git-server/Dockerfile
+    volumes:
+      - type: bind
+        source: ../git-data
+        target: /var/www/git
 
   worker:
     build:
