@@ -1,6 +1,5 @@
 {
-  "name": "k6-monitor",
-  "version": "0.1.0",
+  "name": "latte-controller-gui",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.4.1",
