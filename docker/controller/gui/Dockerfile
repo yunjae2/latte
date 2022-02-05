@@ -26,7 +26,12 @@ ENV GUI_HOME=/root/gui
 WORKDIR ${GUI_HOME}
 
 COPY --from=build ${BUILD_DIR}/build/ .
-COPY ./server.js .
+COPY server/ server/
+
+WORKDIR ${GUI_HOME}/server
+
+## Install server
+RUN npm install
 
 ## Start GUI server
 EXPOSE 80

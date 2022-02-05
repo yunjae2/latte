@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "dependencies": {
+    "express": "^4.17.2",
+    "http-proxy-middleware": "^2.0.2"
+  }
+}
