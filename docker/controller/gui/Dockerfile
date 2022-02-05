@@ -25,7 +25,7 @@ ENV GUI_HOME=/root/gui
 
 WORKDIR ${GUI_HOME}
 
-COPY --from=build ${BUILD_DIR}/build/ .
+COPY --from=build ${BUILD_DIR}/build/ build/
 COPY server/ server/
 
 WORKDIR ${GUI_HOME}/server
