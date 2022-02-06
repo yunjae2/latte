@@ -44,9 +44,23 @@ When the server is up, register the worker URL (`http://<worker addr>:8081`) and
     
 
 ## Architecture
+```
+Controller node
+├── latte-controller-gui: Frontend server
+├── latte-controller-api: Backend server
+└── latte-controller-git: HTTP git apache server
+
+Worker node
+└── latte-worker
+```
 Latte is composed of two nodes: controller and worker.
-<br>
-Controller includes GUI server and API server that forwards run requests to the worker.
+
+#### Controller
 The system state is managed in the controller.
-<br>
+`latte-controller-api` maintains the history of previous tests, forwards requests to the worker and returns responses back to the frontend server.
+It also caches the responses and they are streamed to any users that open the `RUN` tab. 
+
+
+#### Worker
 Worker is where the actual test is run. The standard output of the test is streamed back to the controller node.
+Currently only a single worker can be attached to controller.
