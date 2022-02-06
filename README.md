@@ -63,4 +63,4 @@ It also caches the responses and they are streamed to any users that open the `R
 
 #### Worker
 Worker is where the actual test is run. The standard output of the test is streamed back to the controller node.
-Currently only a single worker can be attached to controller.
+Currently only _a single_ worker can be attached to controller.
