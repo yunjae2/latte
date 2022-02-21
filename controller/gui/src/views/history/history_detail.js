@@ -1,13 +1,16 @@
-import { Button, Grid, Skeleton, Typography } from "@mui/material";
+import {Button, Grid, Skeleton, TextField, Typography} from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import { saveAs } from 'file-saver';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 
 export default function HistoryDetail(props) {
-    const { id } = props;
+    const { id, updateTable } = props;
     const [detail, setDetail] = React.useState({});
     const [loading, setLoading] = React.useState(true);
+    const [editing, setEditing] = React.useState(false);
 
     const style = {
         position: 'absolute',
@@ -35,6 +38,42 @@ export default function HistoryDetail(props) {
             .catch(() => alert("Failed to load the history"));
     }
 
+    const changeName = (event) => {
+        setDetail(prevDetail => ({
+            ...prevDetail,
+            name: event.target.value
+        }));
+    }
+
+    const saveName = (event) => {
+        event.stopPropagation();
+        fetch(`/api/history/${id}/detail`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: detail.name,
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error();
+                }
+                return res.json()
+            })
+            .then(res => res.detail)
+            .then(detail => setDetail(detail))
+            .catch(() => alert("Failed to update the test name"))
+            .finally(() => {
+                setEditing(false)
+                updateTable();
+            });
+    }
+
+    const editName = (event) => {
+        event.stopPropagation();
+        setEditing(true);
+    }
+
     const downloadLog = () => {
         saveAs(`/api/history/${id}/log`, `${detail.name}-${detail.date}.log`);
     }
@@ -57,9 +96,19 @@ export default function HistoryDetail(props) {
                     <Grid item xs={6}>
                         <Grid container>
                             <Grid item xs={12}>
-                                <Typography variant="h6">
-                                    {detail.name}
-                                </Typography>
+                                {editing ?
+                                    <Typography variant="h6">
+                                        <TextField value={detail.name} variant="standard" onChange={changeName}/>
+                                        <span>&nbsp;&nbsp;</span>
+                                        <SaveIcon onClick={saveName} style={{ cursor: 'pointer' }}/>
+                                    </Typography>
+                                    :
+                                    <Typography variant="h6">
+                                        {detail.name}
+                                        <span>&nbsp;&nbsp;</span>
+                                        <EditIcon fontSize="small" onClick={editName} style={{ cursor: 'pointer' }}/>
+                                    </Typography>
+                                }
                             </Grid>
                             <Grid item xs={12}>
                                 <Typography variant="subtitle1">
