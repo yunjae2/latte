@@ -13,8 +13,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,6 +44,15 @@ public class HistoryController {
                 .map(HistoryDetailResponse::from)
                 .doOnSuccess(response -> log.info("Single history fetched; id: {}", id))
                 .doOnError(error -> log.error("Failed to get test detail of id {}", id, error));
+    }
+
+    @PatchMapping("/{id}/detail")
+    public Mono<HistoryDetailResponse> updateName(@PathVariable Long id,
+                                                  @RequestBody String name) {
+        return historyService.updateName(id, name)
+                .map(HistoryDetailResponse::from)
+                .doOnSuccess(response -> log.info("The test name of id {} has been updated to {}", id, name))
+                .doOnError(error -> log.error("Failed to update the test name of id {} to {}", id, name, error));
     }
 
     @GetMapping(value = "/{id}/log", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
