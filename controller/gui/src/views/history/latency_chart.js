@@ -14,7 +14,7 @@ function LatencyLabel(props) {
 
 export default function LatencyChart(props) {
     const { rows } = props;
-    const [maxYAxis, setMaxYAxis] = React.useState(0);
+    const [maxYValue, setMaxYValue] = React.useState(0);
 
     const getStroke = num => {
         const strokes = [
@@ -43,7 +43,7 @@ export default function LatencyChart(props) {
                     .map(key => latency[key].toFixed(0));
                 return Math.max(...values);
             });
-        setMaxYAxis(Math.max(...maxValues));
+        setMaxYValue(Math.max(...maxValues));
     }, [rows]);
 
     const convertToChartData = (rows) => {
@@ -66,21 +66,30 @@ export default function LatencyChart(props) {
         return converted;
     }
 
+    const calMaxTick = () => {
+        let unit = Number((maxYValue * 0.25).toPrecision(1));
+        return Math.ceil(maxYValue / unit) * unit;
+    }
+
     const calcDomain = () => {
-        return [0, maxYAxis];
+        return [0, calMaxTick()];
+    }
+
+    const calcTicks = () => {
+        let tickCount = 5;
+        let maxTick = calMaxTick();
+        return [...Array(tickCount).keys()].map(i => i * maxTick / (tickCount - 1));
     }
 
     return (
         <React.Fragment>
-            <Box sx={{ margin: 1 }}>
-                <ResponsiveContainer width="80%" height={300}>
-                    <LineChart data={convertToChartData(rows)} margin={{ top: 5, right: 20, bottom: 5, left: 15 }}>
+            <Box sx={{ margin: 1, width: '70%' ,maxWidth: 720 }}>
+                <ResponsiveContainer height={300}>
+                    <LineChart data={convertToChartData(rows)} margin={{ top: 5, right: 20, bottom: 5, left: 30 }}>
                         <Tooltip />
-                        <XAxis dataKey="percentile">
-                            <Label value="Percentile" position="insideBottom" offset={0} />
-                        </XAxis>
-                        <YAxis tick={{ dx: -10 }} domain={calcDomain()} >
-                            <Label dx={-10} value="Latency (ms)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+                        <XAxis dataKey="percentile" />
+                        <YAxis tick={{ dx: -10 }} domain={calcDomain()} ticks={calcTicks()}>
+                            <Label dx={-20} value="Latency (ms)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
                         </YAxis>
                         <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
                         <Legend layout="horizontal" verticalAlign="top" align="center" />
