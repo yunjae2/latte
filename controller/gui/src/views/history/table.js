@@ -256,7 +256,7 @@ export default function HistoryTable(props) {
                         aria-labelledby="History detail"
                         aria-describedby="History detail"
                     >
-                        <HistoryDetail id={detailId} />
+                        <HistoryDetail id={detailId} updateTable={reloadRows} />
                     </Modal>
                     <TablePagination
                         rowsPerPage={rowsPerPage}
