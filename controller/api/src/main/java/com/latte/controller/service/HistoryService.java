@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -65,6 +66,15 @@ public class HistoryService {
         return Mono.fromCallable(() -> historyRepository.findById(id))
                 .subscribeOn(Schedulers.boundedElastic())
                 .map(testHistory -> testHistory.orElseThrow(() -> new IllegalStateException("Failed to get the test history of id " + id)));
+    }
+
+    @Transactional
+    public Mono<TestHistory> updateName(Long id, String name) {
+        return Mono.fromCallable(() -> historyRepository.findById(id))
+                .map(optional -> optional.orElseThrow(() -> new IllegalStateException("Failed to get the test history of id " + id)))
+                .doOnNext(testHistory -> testHistory.setName(name))
+                .map(testHistory -> historyRepository.save(testHistory))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     public Mono<Void> rewriteAll() {
