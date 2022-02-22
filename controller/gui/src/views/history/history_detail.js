@@ -5,12 +5,14 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import { saveAs } from 'file-saver';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
+import ClearIcon from '@mui/icons-material/Clear';
 
 export default function HistoryDetail(props) {
     const { id, updateTable } = props;
     const [detail, setDetail] = React.useState({});
     const [loading, setLoading] = React.useState(true);
     const [editing, setEditing] = React.useState(false);
+    const newName = React.useRef();
 
     const style = {
         position: 'absolute',
@@ -38,11 +40,9 @@ export default function HistoryDetail(props) {
             .catch(() => alert("Failed to load the history"));
     }
 
-    const changeName = (event) => {
-        setDetail(prevDetail => ({
-            ...prevDetail,
-            name: event.target.value
-        }));
+    const cancelEdit = (event) => {
+        event.stopPropagation();
+        setEditing(false);
     }
 
     const saveName = (event) => {
@@ -52,7 +52,7 @@ export default function HistoryDetail(props) {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: detail.name,
+            body: newName.current.value,
         })
             .then(res => {
                 if (!res.ok) {
@@ -98,9 +98,10 @@ export default function HistoryDetail(props) {
                             <Grid item xs={12}>
                                 {editing ?
                                     <Typography variant="h6">
-                                        <TextField value={detail.name} variant="standard" onChange={changeName}/>
-                                        <span>&nbsp;&nbsp;</span>
-                                        <SaveIcon onClick={saveName} style={{ cursor: 'pointer' }}/>
+                                        <TextField inputRef={newName} defaultValue={detail.name} variant="standard" />
+                                        <ClearIcon fontSize="small" onClick={cancelEdit} style={{ cursor: 'pointer' }} />
+                                        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                        <SaveIcon onClick={saveName} style={{ cursor: 'pointer' }} />
                                     </Typography>
                                     :
                                     <Typography variant="h6">
