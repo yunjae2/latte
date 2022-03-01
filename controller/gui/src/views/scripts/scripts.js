@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Moment from 'moment'
-import FileBrowser, { Icons } from 'react-keyed-file-browser'
 import 'font-awesome/css/font-awesome.min.css'
-import { Container, CssBaseline, Divider, TextField } from '@mui/material'
-import 'react-keyed-file-browser/dist/react-keyed-file-browser.css'
+import {Container, CssBaseline, TextField} from '@mui/material'
 import ScriptEditor from './editor'
 import { Box } from '@mui/system'
+import Explorer from "./explorer";
 
 const defaultFiles = [
     {
@@ -47,52 +46,13 @@ const defaultFiles = [
 ];
 
 export default function Scripts() {
-    const [files, setFiles] = useState(defaultFiles);
+    const [files, setFiles] = useState([]);
     const [editorOpen, setEditorOpen] = useState(false);
     const [openFileName, setOpenFileName] = useState(null);
     const [openFileContent, setOpenFileContent] = useState(null);
 
     const getRepositoryUrl = () => {
         return "http://" + window.location.hostname + ":8082/latte_repo";
-    }
-
-    const handleCreateFolder = (key) => {
-        /* TODO: Create at the server */
-        alert("Not implemented");
-    };
-
-    const handleCreateFiles = (nfiles, prefix) => {
-        /* TODO: Create at the server */
-        alert("Not implemented");
-    }
-
-    const handleRenameFolder = (oldKey, newKey) => {
-        /* TODO: Rename from the server */
-        alert("Not implemented");
-    };
-
-    const handleRenameFile = (oldKey, newKey) => {
-        /* TODO: Rename from the server */
-        alert("Not implemented");
-    };
-
-    const handleDeleteFolder = (folderKey) => {
-        /* TODO: Delete from the server */
-        alert("Not implemented");
-    }
-
-    const handleDeleteFile = (fileKey) => {
-        /* TODO: Delete from the server */
-        alert("Not implemented");
-    }
-
-    const handleSelectFile = (file) => {
-        fetch("/api/script?fileName=" + file.key)
-            .then(res => res.text())
-            .then(content => setOpenFileContent(content))
-            .then(() => setOpenFileName(file.key))
-            .then(() => setEditorOpen(true))
-            .catch(error => alert("Failed to open the file"));
     }
 
     const handleCommitFile = (fileName, content, message) => {
@@ -132,6 +92,15 @@ export default function Scripts() {
             .catch(error => alert("Failed to load scripts"))
     }
 
+    const openFile = (file) => {
+        fetch("/api/script?fileName=" + file.key)
+            .then(res => res.text())
+            .then(content => setOpenFileContent(content))
+            .then(() => setOpenFileName(file.key))
+            .then(() => setEditorOpen(true))
+            .catch(error => alert("Failed to open the file"));
+    }
+
     useEffect(() => {
         loadFiles();
     }, []);
@@ -153,22 +122,7 @@ export default function Scripts() {
                         InputProps={{ readOnly: true }}
                     />
                     <Box sx={{ height: 20 }} />
-                    <Box sx={{ height: 1000, p: 1, border: '2px solid grey', borderRadius: 1 }}>
-                        <FileBrowser
-                            files={files}
-                            icons={Icons.FontAwesome(4)}
-
-                            onCreateFolder={handleCreateFolder}
-                            onCreateFiles={handleCreateFiles}
-                            onMoveFolder={handleRenameFolder}
-                            onMoveFile={handleRenameFile}
-                            onRenameFolder={handleRenameFolder}
-                            onRenameFile={handleRenameFile}
-                            onDeleteFolder={handleDeleteFolder}
-                            onDeleteFile={handleDeleteFile}
-                            onSelectFile={handleSelectFile}
-                        />
-                    </Box>
+                    <Explorer files={files} openFile={openFile} />
                 </Container>
             </React.Fragment>
         );
