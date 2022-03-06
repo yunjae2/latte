@@ -1,8 +1,34 @@
 import React, { useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { useRef } from 'react';
-import { Button, Container, CssBaseline, Grid, TextField } from '@mui/material';
+import {
+    Button,
+    Card,
+    Container,
+    createTheme,
+    Grid,
+    TextField,
+    ThemeProvider,
+    Typography
+} from '@mui/material';
 import { Box } from '@mui/system';
+
+const theme = createTheme({
+    typography: {
+        fontFamily: [
+            'sans-serif',
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+        ].join(','),
+    },
+});
 
 export default function ScriptEditor(props) {
     const { fileName, content, commitFile, closeEditor } = props;
@@ -31,6 +57,24 @@ export default function ScriptEditor(props) {
         <React.Fragment>
             <Container>
                 <Box sx={{ height: 20 }} />
+                <Card variant="outlined" style={{
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    paddingTop: 5,
+                    paddingBottom: 3,
+                    overflow: 'auto',
+                    backgroundColor: "#0000009f",
+                    borderTopLeftRadius: 3,
+                    borderTopRightRadius: 3,
+                    borderBottomLeftRadius: 0,
+                    borderBottomRightRadius: 0,
+                    borderWidth: 0,
+                    display: 'inline-block'
+                }}>
+                    <ThemeProvider theme={theme} >
+                        <Typography variant="h6" color="#eeeeee" component="div">{fileName}</Typography>
+                    </ThemeProvider>
+                </Card>
                 <Editor
                     height="80vh"
                     theme="vs-dark"
