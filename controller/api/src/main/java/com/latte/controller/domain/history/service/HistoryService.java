@@ -1,4 +1,4 @@
-package com.latte.controller.service;
+package com.latte.controller.domain.history.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -6,13 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.latte.controller.domain.Latency;
 import com.latte.controller.domain.TestHistory;
 import com.latte.controller.domain.TestHistory.TestHistoryBuilder;
+import com.latte.controller.domain.history.infrastructure.HistoryRepository;
+import com.latte.controller.domain.history.interfaces.request.HistorySearchRequest;
 import com.latte.controller.dto.RunConfig;
 import com.latte.controller.dto.RunInfo;
-import com.latte.controller.repository.HistoryRepository;
 import com.latte.controller.repository.LogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -29,9 +33,27 @@ public class HistoryService {
     private final LogRepository logRepository;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    public Mono<Long> count() {
+        return Mono.fromCallable(() -> historyRepository.count())
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
     public Mono<List<TestHistory>> getAll() {
         return Mono.fromCallable(() -> historyRepository.findAll())
                 .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    /* TODO: write integration test */
+    public Mono<List<TestHistory>> fetch(HistorySearchRequest historySearchRequest) {
+        return Mono.fromCallable(() -> historyRepository.findAll(buildPageRequest(historySearchRequest)))
+                .map(Slice::getContent)
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    private PageRequest buildPageRequest(HistorySearchRequest historySearchRequest) {
+        return PageRequest.ofSize(historySearchRequest.getSize())
+                .withPage(historySearchRequest.getPage())
+                .withSort(Direction.fromString(historySearchRequest.getOrder().name()), historySearchRequest.getOrderBy());
     }
 
     public Mono<Void> save(RunConfig runConfig, RunInfo runInfo, String summary, String consoleLog) {
@@ -122,4 +144,5 @@ public class HistoryService {
                 .map(logRepository::getLog)
                 .subscribeOn(Schedulers.boundedElastic());
     }
+
 }
