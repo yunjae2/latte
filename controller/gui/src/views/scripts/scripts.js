@@ -56,7 +56,7 @@ export default function Scripts() {
     }
 
     const handleCommitFile = (fileName, content, message) => {
-        fetch("/api/script/commit", {
+        return fetch("/api/script/commit", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -73,10 +73,13 @@ export default function Scripts() {
                 }
             })
             .then(() => loadFiles())
-            .then(() => setEditorOpen(false))
-            .then(() => setOpenFileName(null))
-            .then(() => setOpenFileContent(null))
             .catch(error => alert("Commit failed"));
+    }
+
+    const closeEditor = () => {
+        setEditorOpen(false);
+        setOpenFileName(null);
+        setOpenFileContent(null);
     }
 
     const loadFiles = () => {
@@ -106,7 +109,7 @@ export default function Scripts() {
     }, []);
 
     if (editorOpen) {
-        return <ScriptEditor fileName={openFileName} content={openFileContent} commitFile={handleCommitFile} />
+        return <ScriptEditor fileName={openFileName} content={openFileContent} commitFile={handleCommitFile} closeEditor={closeEditor} />
     } else {
         return (
             <React.Fragment>

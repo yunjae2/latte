@@ -5,7 +5,7 @@ import { Button, Container, CssBaseline, Grid, TextField } from '@mui/material';
 import { Box } from '@mui/system';
 
 export default function ScriptEditor(props) {
-    const { fileName, content, commitFile } = props;
+    const { fileName, content, commitFile, closeEditor } = props;
     const editorRef = useRef(null);
     const [message, setMessage] = useState("");
 
@@ -15,11 +15,16 @@ export default function ScriptEditor(props) {
 
     const handleOnClick = (event) => {
         let newContent = editorRef.current.getValue();
-        commitFile(fileName, newContent, message);
+        commitFile(fileName, newContent, message)
+            .then(() => closeEditor());
     }
 
     const handleOnChange = (event) => {
         setMessage(event.target.value);
+    }
+
+    const handleCancel = () => {
+        closeEditor();
     }
 
     return (
@@ -37,7 +42,11 @@ export default function ScriptEditor(props) {
                 <Box sx={{ height: 20 }} />
                 <TextField fullWidth label="Commit message" value={message} onChange={handleOnChange} />
                 <Box sx={{ height: 10 }} />
-                <Button style={{ float: "right" }} onClick={handleOnClick} variant="contained" size="">Commit</Button>
+                <Grid container justifyContent="flex-end">
+                    <Button onClick={handleCancel} color="error" variant="outlined" size="">Cancel</Button>
+                    &nbsp;&nbsp;
+                    <Button onClick={handleOnClick} variant="contained" size="">Commit</Button>
+                </Grid>
             </Container>
         </React.Fragment>
     );
