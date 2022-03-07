@@ -43,7 +43,6 @@ public class HistoryService {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-    /* TODO: write integration test */
     public Mono<List<TestHistory>> fetch(HistorySearchRequest historySearchRequest) {
         return Mono.fromCallable(() -> historyRepository.findAll(buildPageRequest(historySearchRequest)))
                 .map(Slice::getContent)

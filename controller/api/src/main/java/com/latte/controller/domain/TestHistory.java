@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -80,7 +81,7 @@ public class TestHistory {
         this.actualTps = actualTps;
         this.duration = duration;
         this.iterationTotal = iterationTotal;
-        this.iterationSuccess = iterationTotal - iterationFail;
+        this.iterationSuccess = Optional.ofNullable(iterationTotal).orElse(0L) - Optional.ofNullable(iterationFail).orElse(0L);
         this.iterationFail = iterationFail;
         this.latency = latency;
         this.result = result;
