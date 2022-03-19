@@ -40,7 +40,7 @@ export default function LatencyChart(props) {
             .map(latency => {
                 let values = Object.keys(latency)
                     .filter(key => key.startsWith("p"))
-                    .map(key => latency[key].toFixed(0));
+                    .map(key => latency[key]?.toFixed(0) ?? 0);
                 return Math.max(...values);
             });
         setMaxYValue(Math.max(...maxValues));
@@ -51,10 +51,21 @@ export default function LatencyChart(props) {
             .map(latency => {
                 return Object.keys(latency)
                     .filter(key => key.startsWith("p"))
-                    .map(key => ({
-                        percentile: key.replace("_", "."),
-                        value: latency[key].toFixed(0),
-                    }));
+                    .filter(key => latency[key] != null)
+                    .map(key => {
+                        let percentile;
+                        if (key.includes("c")) {
+                            let strings = key.substring(1).split("c");  // p9c4  -> 9, 4
+                            let numbers = strings[0].repeat(parseInt(strings[1]));   // 9999
+                            percentile = "p" + numbers.substring(0, 2) + "." + numbers.substring(2);    // p99.99
+                        } else {
+                            percentile = key;
+                        }
+                        return {
+                            percentile,
+                            value: latency[key].toFixed(0),
+                        }
+                    });
             });
 
 

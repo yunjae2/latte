@@ -26,9 +26,6 @@ management:
       exposure:
         include: refresh
 
----
-spring.config.activate.on-profile: dev
-
 latte:
   home.path: ${user.home}/.latte
   scripts:

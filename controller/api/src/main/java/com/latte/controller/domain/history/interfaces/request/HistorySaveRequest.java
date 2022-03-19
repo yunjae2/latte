@@ -1,4 +1,4 @@
-package com.latte.controller.controller.request;
+package com.latte.controller.domain.history.interfaces.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

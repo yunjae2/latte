@@ -1,4 +1,4 @@
-package com.latte.controller.repository;
+package com.latte.controller.domain.history.infrastructure;
 
 import com.latte.controller.domain.TestHistory;
 import org.springframework.data.jpa.repository.JpaRepository;

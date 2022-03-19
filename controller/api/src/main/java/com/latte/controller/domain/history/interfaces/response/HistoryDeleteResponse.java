@@ -1,4 +1,4 @@
-package com.latte.controller.controller.response;
+package com.latte.controller.domain.history.interfaces.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,7 @@
 package com.latte.controller.service;
 
 import com.latte.controller.client.WorkerClient;
+import com.latte.controller.domain.history.service.HistoryService;
 import com.latte.controller.property.ControllerProperties;
 import com.latte.controller.controller.request.RunnerRequest;
 import com.latte.controller.dto.RunConfig;
