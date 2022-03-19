@@ -1,5 +1,6 @@
 package com.latte.controller.repository;
 
+import com.latte.controller.dto.FileInfo;
 import com.latte.controller.property.ScriptProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,5 +85,27 @@ public class ScriptRepository {
                 .map(fullName -> fullName.split("/"))
                 .map(fields -> fields[fields.length - 1])
                 .collect(Collectors.toList());
+    }
+
+    public List<FileInfo> findAll() {
+        try {
+            return Files.walk(scriptProperties.getPath())
+                    .filter(Files::isRegularFile)
+                    .filter(path -> !scriptProperties.getPath().relativize(path).startsWith(".git"))
+                    .map(path -> FileInfo.fromPath(scriptProperties.getPath(), path))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error("Failed during building file tree", e);
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public String readFile(String fileName) {
+        try {
+            return Files.readString(scriptProperties.getPath().resolve(fileName));
+        } catch (IOException e) {
+            log.error("Failed to read file {}", fileName, e);
+            throw new IllegalStateException(e);
+        }
     }
 }

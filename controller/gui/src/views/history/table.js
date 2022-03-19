@@ -13,6 +13,7 @@ import LatencyChart from './latency_chart';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import HistoryDetail from './history_detail';
+import {useEffect, useState} from "react";
 
 const grayCell = {
     backgroundColor: "F0F0F0"
@@ -29,7 +30,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-    return order === 'desc'
+    return order === 'DESC'
         ? (a, b) => descendingComparator(a, b, orderBy)
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -42,14 +43,14 @@ function EnhancedTableCell(props) {
             align={align}
             rowSpan={rowSpan}
             colSpan={colSpan}
-            sortDirection={orderBy === id ? order : false}
+            sortDirection={(orderBy === id ? order : 'DESC').toLowerCase()}
             style={style}
         >
             {label}
             <br />
             <TableSortLabel
                 active={orderBy === id}
-                direction={orderBy === id ? order : 'asc'}
+                direction={(orderBy === id ? order : 'ASC').toLowerCase()}
                 onClick={createSortHandler(id)}
             >
             </TableSortLabel>
@@ -70,7 +71,7 @@ function EnhancedTableHead(props) {
                 <TableCell rowSpan={2} />
                 <EnhancedTableCell id="name" align="left" label="Name" rowSpan={2} colSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="date" align="center" label="Date" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
-                <EnhancedTableCell id="tps" align="right" label="TPS" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
+                <EnhancedTableCell id="actualTps" align="right" label="TPS" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="duration" align="right" label="Duration" rowSpan={2} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <TableCell colSpan={8} align="center" size="small">Latency&nbsp;(ms)</TableCell>
             </TableRow>
@@ -80,8 +81,8 @@ function EnhancedTableHead(props) {
                 <EnhancedTableCell id="latency.max" align="right" label="max" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} style={grayCell} />
                 <EnhancedTableCell id="latency.p50" align="right" label="p50" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="latency.p99" align="right" label="p99" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
-                <EnhancedTableCell id="latency.p99_9" align="right" label="p99.9" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
-                <EnhancedTableCell id="latency.p99_99" align="right" label="p99.99" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
+                <EnhancedTableCell id="latency.p9c3" align="right" label="p99.9" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
+                <EnhancedTableCell id="latency.p9c4" align="right" label="p99.99" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <TableCell />
             </TableRow>
         </TableHead>
@@ -92,7 +93,7 @@ EnhancedTableHead.propTypes = {
     numSelected: PropTypes.number.isRequired,
     onRequestSort: PropTypes.func.isRequired,
     onSelectAllClick: PropTypes.func.isRequired,
-    order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+    order: PropTypes.oneOf(['ASC', 'DESC']).isRequired,
     orderBy: PropTypes.string.isRequired,
     rowCount: PropTypes.number.isRequired,
 };
@@ -163,8 +164,8 @@ function Row(props) {
                 <TableCell align="right" style={grayCell}>{row.latency.max.toFixed(0)}</TableCell>
                 <TableCell align="right">{row.latency.p50.toFixed(0)}</TableCell>
                 <TableCell align="right">{row.latency.p99.toFixed(0)}</TableCell>
-                <TableCell align="right">{row.latency.p99_9.toFixed(0)}</TableCell>
-                <TableCell align="right">{row.latency.p99_99.toFixed(0)}</TableCell>
+                <TableCell align="right">{row.latency.p9c3?.toFixed(0) ?? '-'}</TableCell>
+                <TableCell align="right">{row.latency.p9c4?.toFixed(0) ?? '-'}</TableCell>
                 <TableCell align="right"><DeleteOutlineIcon fontSize='small' onClick={tryDelete} style={{ cursor: 'pointer' }} /></TableCell>
             </TableRow>
             <Dialog open={deleteConfirmOpen} fullWidth maxWidth="xs">
@@ -198,31 +199,69 @@ function Row(props) {
     );
 }
 
-export default function HistoryTable(props) {
-    const { rows, reloadRows } = props;
-    const [order, setOrder] = React.useState('desc');
+export default function HistoryTable() {
+    const [order, setOrder] = React.useState('DESC');
     const [orderBy, setOrderBy] = React.useState('date');
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [activeRowIds, setActiveRowIds] = React.useState([]);
     const [isDetailOpen, setIsDetailOpen] = React.useState(false);
     const [detailId, setDetailId] = React.useState(-1);
+    const [count, setCount] = useState(0);
+    const [rows, setRows] = useState([]);
 
-    const handleRequestSort = (event, property) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
+    const fetchCount = () => {
+        fetch("/api/history/count")
+            .then(res => res.text())
+            .then(count => setCount(parseInt(count)))
+            .catch(error => alert("Failed to load the number of past records"));
+    }
+
+    const fetchRows = (page, size, orderBy, order) => {
+        let params = {
+            page,
+            size,
+            orderBy,
+            order
+        };
+
+        return fetch("/api/history?" + new URLSearchParams(params))
+            .then(res => res.json())
+            .then(res => res.records)
+            .catch(error => alert("Failed to load history"))
+    }
+
+    const handleRequestSort = async (event, property) => {
+        const isAsc = orderBy === property && order === 'ASC';
+        let newOrder = isAsc ? 'DESC' : 'ASC';
+        await updateRows(0, rowsPerPage, property, newOrder);
+        setOrder(newOrder);
         setOrderBy(property);
         setPage(0);
     };
 
-    const handlePageChange = (event, newPage) => {
-        setPage(newPage);
+    const handlePageChange = async (event, newPage) => {
+        await fetchCount();
+        await updateRows(newPage, rowsPerPage, orderBy, order);
+        await setPage(newPage);
     }
 
     const handleRowsPerPageChange = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        let newRowsPerPage = parseInt(event.target.value, 10);
+        updateRows(page, newRowsPerPage);
+        setRowsPerPage(newRowsPerPage);
         setPage(0);
     }
+
+    const updateRows = async (newPage = page, _size = rowsPerPage, _orderBy = orderBy, _order = order) => {
+        let newRows = await fetchRows(newPage, _size, _orderBy, _order);
+        setRows(newRows);
+    }
+
+    useEffect(async () => {
+        await fetchCount();
+        await updateRows(page);
+    }, []);
 
     return (
         <React.Fragment>
@@ -237,7 +276,6 @@ export default function HistoryTable(props) {
                     />
                     <TableBody>
                         {rows.sort(getComparator(order, orderBy))
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => (
                                 <Row
                                     key={row.id}
@@ -246,7 +284,7 @@ export default function HistoryTable(props) {
                                     setActiveRowIds={setActiveRowIds}
                                     setIsDetailOpen={setIsDetailOpen}
                                     setDetailId={setDetailId}
-                                    refresh={reloadRows}
+                                    refresh={updateRows}
                                 />
                             ))}
                     </TableBody>
@@ -254,16 +292,17 @@ export default function HistoryTable(props) {
                         open={isDetailOpen}
                         onClose={() => setIsDetailOpen(false)}
                         aria-labelledby="History detail"
-                        aria-describedby="History detail"
+                        aria-DESCribedby="History detail"
                     >
-                        <HistoryDetail id={detailId} updateTable={reloadRows} />
+                        <HistoryDetail id={detailId} updateTable={updateRows} />
                     </Modal>
                     <TablePagination
                         rowsPerPage={rowsPerPage}
                         rowsPerPageOptions={[10, 20, 50, { label: 'All', value: -1 }]}
                         onRowsPerPageChange={handleRowsPerPageChange}
-                        count={rows.length}
-                        page={page} onPageChange={handlePageChange}
+                        count={count}
+                        page={page}
+                        onPageChange={handlePageChange}
                     />
                 </Table>
             </TableContainer>

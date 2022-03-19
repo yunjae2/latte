@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   controller-gui:
-    image: yunjae2/latte-controller-gui:1.2.0
+    image: yunjae2/latte-controller-gui:1.3.0
     container_name: latte-controller-gui
     environment:
       - PORT=80
@@ -14,7 +14,7 @@ services:
       - controller-api
 
   controller-api:
-    image: yunjae2/latte-controller-api:1.2.0
+    image: yunjae2/latte-controller-api:1.3.0
     container_name: latte-controller-api
     volumes:
       - type: volume
@@ -31,7 +31,7 @@ services:
       - controller-git
 
   controller-git:
-    image: yunjae2/latte-controller-git:1.2.0
+    image: yunjae2/latte-controller-git:1.3.0
     container_name: latte-controller-git
     volumes:
       - type: volume
@@ -43,7 +43,7 @@ services:
       - "controller"
 
   worker:
-    image: yunjae2/latte-worker:1.2.0
+    image: yunjae2/latte-worker:1.3.0
     container_name: latte-worker
     ports:
       - "8081:8081"

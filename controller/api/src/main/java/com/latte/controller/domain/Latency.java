@@ -1,6 +1,10 @@
 package com.latte.controller.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Embeddable;
 
@@ -17,6 +21,6 @@ public class Latency {
 
     private Double p50;
     private Double p99;
-    private Double p99_9;
-    private Double p99_99;
+    private Double p9c3;    // p99.9
+    private Double p9c4;    // p99.99
 }
