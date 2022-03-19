@@ -123,8 +123,8 @@ public class HistoryService {
                         .avg(root.at("/metrics/http_req_duration/values/avg").asDouble())
                         .p50(root.at("/metrics/http_req_duration/values/p(50)").asDouble())
                         .p99(root.at("/metrics/http_req_duration/values/p(99)").asDouble())
-                        .p99_9(root.at("/metrics/http_req_duration/values/p(99.9)").asDouble())
-                        .p99_99(root.at("/metrics/http_req_duration/values/p(99.99)").asDouble())
+                        .p9c3(root.at("/metrics/http_req_duration/values/p(99.9)").asDouble())
+                        .p9c4(root.at("/metrics/http_req_duration/values/p(99.99)").asDouble())
                         .build());
     }
 

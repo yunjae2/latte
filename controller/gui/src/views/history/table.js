@@ -81,8 +81,8 @@ function EnhancedTableHead(props) {
                 <EnhancedTableCell id="latency.max" align="right" label="max" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} style={grayCell} />
                 <EnhancedTableCell id="latency.p50" align="right" label="p50" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <EnhancedTableCell id="latency.p99" align="right" label="p99" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
-                <EnhancedTableCell id="latency.p99_9" align="right" label="p99.9" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
-                <EnhancedTableCell id="latency.p99_99" align="right" label="p99.99" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
+                <EnhancedTableCell id="latency.p9c3" align="right" label="p99.9" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
+                <EnhancedTableCell id="latency.p9c4" align="right" label="p99.99" rowSpan={1} orderBy={orderBy} order={order} createSortHandler={createSortHandler} />
                 <TableCell />
             </TableRow>
         </TableHead>
@@ -164,8 +164,8 @@ function Row(props) {
                 <TableCell align="right" style={grayCell}>{row.latency.max.toFixed(0)}</TableCell>
                 <TableCell align="right">{row.latency.p50.toFixed(0)}</TableCell>
                 <TableCell align="right">{row.latency.p99.toFixed(0)}</TableCell>
-                <TableCell align="right">{row.latency.p99_9.toFixed(0)}</TableCell>
-                <TableCell align="right">{row.latency.p99_99.toFixed(0)}</TableCell>
+                <TableCell align="right">{row.latency.p9c3?.toFixed(0) ?? '-'}</TableCell>
+                <TableCell align="right">{row.latency.p9c4?.toFixed(0) ?? '-'}</TableCell>
                 <TableCell align="right"><DeleteOutlineIcon fontSize='small' onClick={tryDelete} style={{ cursor: 'pointer' }} /></TableCell>
             </TableRow>
             <Dialog open={deleteConfirmOpen} fullWidth maxWidth="xs">
@@ -259,7 +259,6 @@ export default function HistoryTable() {
     }
 
     useEffect(async () => {
-        console.log("1234");
         await fetchCount();
         await updateRows(page);
     }, []);
